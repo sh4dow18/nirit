@@ -1,0 +1,4 @@
+[Desktop Entry]
+Name=Nirit
+Exec=/etc/X11/nirit
+Type=Application

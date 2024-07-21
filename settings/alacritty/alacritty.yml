@@ -1,0 +1,24 @@
+colors:
+  primary:
+    background: '0x000000'
+    foreground: '0xdddddd'
+  normal:
+    green: '0x00ff00'
+    blue: '0x73b7ff'
+  bright:
+    green: '0x00ff00'
+    blue: '0x73b7ff'
+font:
+  normal:
+    family: 'Agave Nerd Font'
+    style: Normal
+  bold:
+    family: 'Agave Nerd Font'
+    style: Bold
+  italic:
+    family: 'Agave Nerd Font'
+    style: Italic
+  bold_italic:
+    family: 'Agave Nerd Font'
+    style: Bold Italic
+  size: 17
