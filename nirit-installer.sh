@@ -82,7 +82,7 @@ main() {
     DESKTOP="x11-xserver-utils python3-pip python3-xcffib python3-cairocffi libpangocairo-1.0-0 python3-psutil apt-show-versions"
     FILES="zip unzip thunar"
     MENUS="rofi"
-    DEVICES="udiskie ntfs-3g policykit-1-gnome"
+    DEVICES="udiskie ntfs-3g policykit-1-gnome gnome-disk-utility lxrandr blueman cbatticon gvfs-backends"
     TERMINAL="exa fish bat alacritty"
     AUDIO="pulseaudio pamixer"
     UTILITIES="flameshot"
