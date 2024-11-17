@@ -101,7 +101,7 @@ main() {
     elif [[ $1 == "-n" ]]; then
         colorize $BROWN "\nChosen Method: Normal" | tee -a $LOG_FILE
         # Nirit Core Recommended Programs to Better Experience
-        MULTIMEDIA="vlc feh"
+        MULTIMEDIA="vlc feh gpicview audacious"
         THEMES="lxappearance"
         OFFICE="qalculate-gtk evince"
         # Ask Questions to Know if install some optional programs
