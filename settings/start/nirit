@@ -6,6 +6,7 @@ xrandr --output Virtual1 --primary --mode 1920x1080
 udiskie -t &
 nm-applet &
 cbatticon &
+dunst &
 feh --bg-scale ~/.nirit/wallpaper.jpg &
 /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &
 qtile start

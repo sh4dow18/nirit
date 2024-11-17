@@ -85,6 +85,7 @@ main() {
     DEVICES="udiskie ntfs-3g policykit-1-gnome gnome-disk-utility lxrandr blueman cbatticon gvfs-backends"
     TERMINAL="exa fish bat alacritty"
     AUDIO="pulseaudio pamixer"
+    NOTIFICATIONS="dunst libnotify-bin"
     UTILITIES="flameshot"
     # Nirit Important Variables
     BROWSER="firefox-esr"
@@ -206,18 +207,19 @@ main() {
     # Installing Nirit Core
     colorize $BROWN "\nInstalling Nirit Core..." | tee -a $LOG_FILE
     install_programs $HIGH_BLUE "Log In" "0" "$LOGIN" true
-    install_programs $ORANGE "Have a Desktop" "11.1" "$DESKTOP" true
+    install_programs $ORANGE "Have a Desktop" "10" "$DESKTOP" true
     sudo pip install --no-cache-dir --break-system-packages qtile >> $LOG_FILE 2>&1
-    install_programs $WHITE "Manipulate Files" "22.2" "$FILES" true
-    install_programs $HIGH_PURPLE "Have a Menu to Launch Apps" "33.3" "$MENUS" true
-    install_programs $BROWN "Maniputate Devices" "44.4" "$DEVICES" true
-    install_programs $HIGH_GREEN "Have a Better Experience in a Terminal" "55.5" "$TERMINAL" true
-    install_programs $PURPLE "Have Audio" "66.6" "$AUDIO" true
-    install_programs $GRAY "Utilities" "77.7" "$UTILITIES" false
+    install_programs $WHITE "Manipulate Files" "20" "$FILES" true
+    install_programs $HIGH_PURPLE "Have a Menu to Launch Apps" "30" "$MENUS" true
+    install_programs $BROWN "Maniputate Devices" "40" "$DEVICES" true
+    install_programs $HIGH_GREEN "Have a Better Experience in a Terminal" "50" "$TERMINAL" true
+    install_programs $PURPLE "Have Audio" "60" "$AUDIO" true
+    install_programs $HIGH_BLUE "Have Notifications" "70" "$NOTIFICATIONS" true
+    install_programs $GRAY "Utilities" "80" "$UTILITIES" false
     if [[ $BROWSER == "opera-stable" ]]; then
         no_questions "opera-stable opera-stable/add-deb-source boolean false"
     fi
-    install_programs $HIGH_RED "Browser" "88.8" "$BROWSER" false
+    install_programs $HIGH_RED "Browser" "90" "$BROWSER" false
     progress_status $GREEN "Instalation Completed" "100"
     if [[ $1 == "-n" ]]; then
         # Installing Nirit Recommended
@@ -260,13 +262,13 @@ main() {
     # Creating Configuration Directory
     sudo mkdir $HOME/.config >> $LOG_FILE 2>&1
     # Changing Fonts
-    progress_status $PURPLE "Installing Fonts..." "10"
+    progress_status $PURPLE "Installing Fonts..." "9"
     mkdir $HOME/.local >> $LOG_FILE 2>&1
     mkdir $HOME/.local/share >> $LOG_FILE 2>&1
     cp -r settings/fonts/ $HOME/.local/share/ >> $LOG_FILE 2>&1
     fc-cache -f
     # Installing Lightdm Configuration
-    progress_status $LIGHT_BLUE "Installing Lightdm Configuration..." "20"
+    progress_status $LIGHT_BLUE "Installing Lightdm Configuration..." "18"
     sudo mkdir /usr/share/xsessions >> $LOG_FILE 2>&1
     sudo systemctl enable lightdm >> $LOG_FILE 2>&1
     sudo cp settings/lightdm/lightdm-gtk-greeter.conf /etc/lightdm/ >> $LOG_FILE 2>&1
@@ -276,7 +278,7 @@ main() {
     sudo sed -i "s/#user-session=default/user-session=Nirit/g" /etc/lightdm/lightdm.conf 2>> $LOG_FILE
     #user-session=default
     # Installing Qtile Configuration
-    progress_status $ORANGE "Installing Qtile Configuration..." "30"
+    progress_status $ORANGE "Installing Qtile Configuration..." "27"
     # Getting CPU Sensor validating if it is an Intel CPU or AMD CPU
     CPU_SENSOR=$(lsmod | grep -E 'coretemp|k10temp' | head -n 1 | cut -d " " -f 1)
     # If it is an AMD CPU, use "Tctl"
@@ -311,27 +313,32 @@ main() {
     sudo cp settings/start/Nirit.desktop /usr/share/xsessions/ >> $LOG_FILE 2>&1
     sudo cp settings/start/nirit /etc/X11/ >> $LOG_FILE 2>&1
     # Installing Alacritty Configuration
-    progress_status $BROWN "Installing Alacritty Configuration..." "40"
+    progress_status $BROWN "Installing Alacritty Configuration..." "36"
     sudo cp -r settings/alacritty $HOME/.config/ >> $LOG_FILE 2>&1
     # Installing Rofi Menu Configuration
-    progress_status $HIGH_PURPLE "Installing Rofi Configuration..." "50"
+    progress_status $HIGH_PURPLE "Installing Rofi Configuration..." "45"
     sudo cp settings/rofi/launcher.rasi /usr/share/rofi/themes/ >> $LOG_FILE 2>&1
     mkdir $HOME/.config/rofi >> $LOG_FILE 2>&1
     cp settings/rofi/config.rasi $HOME/.config/rofi/ >> $LOG_FILE 2>&1
     # Changing to the "Fish" shell and Installing "Fish" Configuration
-    progress_status $HIGH_GREEN "Installing Fish Configuration..." "60"
+    progress_status $HIGH_GREEN "Installing Fish Configuration..." "54"
     sudo chsh -s /bin/fish $USER >> $LOG_FILE 2>&1
     mkdir $HOME/.config/fish >> $LOG_FILE 2>&1
     cp settings/fish/config.fish $HOME/.config/fish >> $LOG_FILE 2>&1
+    # Installing Dunst Configuration
+    progress_status $HIGH_BLUE "Installing Dunst Configuration..." "63"
+    mkdir $HOME/.config/dunst
+    cp settings/dunst/dunstrc $HOME/.config/dunst >> $LOG_FILE 2>&1
+    sudo cp -r settings/dunst/icons /usr/share/icons/nirit
     # Installing New Cursor
-    progress_status $WHITE "Installing Cursor..." "70"
+    progress_status $WHITE "Installing Cursor..." "72"
     sudo unzip settings/gtk/cursor/ComixCursors-Opaque-White.zip >> $LOG_FILE 2>&1
     sudo mkdir /usr/share/icons/ >> $LOG_FILE 2>&1
     sudo mv ComixCursors-Opaque-White/ /usr/share/icons/ >> $LOG_FILE 2>&1
     sudo mkdir /usr/share/icons/default/ >> $LOG_FILE 2>&1
     sudo cp settings/gtk/cursor/index.theme /usr/share/icons/default/ >> $LOG_FILE 2>&1
     # Installing Grub Theme
-    progress_status $LIGHT_BLUE "Installing Grub Theme..." "80"
+    progress_status $LIGHT_BLUE "Installing Grub Theme..." "81"
     sudo unzip settings/grub/darkmatter.zip >> $LOG_FILE 2>&1
     sudo mkdir /boot/grub/themes >> $LOG_FILE 2>&1
     sudo mv darkmatter/ /boot/grub/themes >> $LOG_FILE 2>&1

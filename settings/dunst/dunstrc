@@ -1,0 +1,22 @@
+[global]
+    # Window
+    width = (0, 300)
+    corner_radius = 15
+    # Padding
+    horizontal_padding = 15
+    # Border
+    frame_width = 2
+    # Text
+    font = agave Nerd Font 12
+    line_height = 2
+    # Icons
+    min_icon_size = 40
+    max_icon_size = 128
+    icon_path = /usr/share/icons/nirit/status/:/usr/share/icons/nirit/devices/
+    # Colors
+    foreground = "#ffffff"
+    background = "#000000"
+[urgency_normal]
+    frame_color = "#285577"
+[urgency_critical]
+    frame_color = "#f00000"
