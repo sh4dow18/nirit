@@ -84,7 +84,7 @@ main() {
     MENUS="rofi"
     DEVICES="udiskie ntfs-3g policykit-1-gnome gnome-disk-utility lxrandr blueman cbatticon gvfs-backends"
     TERMINAL="exa fish bat alacritty"
-    AUDIO="pulseaudio pamixer"
+    AUDIO="pulseaudio pamixer pavucontrol pasystray"
     NOTIFICATIONS="dunst libnotify-bin"
     UTILITIES="flameshot ibus gnome-system-monitor connman connman-gtk"
     # Nirit Important Variables

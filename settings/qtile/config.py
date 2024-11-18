@@ -107,14 +107,6 @@ widget_defaults = dict(
     fontsize=15,
     padding=0
 )
-# Common Params of Volume Widget
-# Change sink value to change the volume
-widgetVolumeParams = {
-    "get_volume_command": getVolume,
-    "mute_command": muteVolume,
-    "volume_up_command": increaseVolume,
-    "volume_down_command": decreseVolume
-}
 # Function that creates a Widgets Section
 def widgetsSection(previousColor, backgroundColor, widgetsList, padding=3, fontsize=20):
     # Common Params to all Widgets in this Section
@@ -243,21 +235,8 @@ screens = [
                     ),
                     widget.CurrentLayout()
                 ]),
-                # Volume Information Section
-                *widgetsSection(previousColor="0055AA", backgroundColor="572364", widgetsList=[
-                    widget.Volume(
-                        emoji=True,
-                        emoji_list=["", "", "", " "],
-                        fontsize=20,
-                        **widgetVolumeParams
-                    ),
-                    widget.Volume(
-                        fontsize=18,
-                        **widgetVolumeParams
-                    )
-                ]),
                 # System Tray Information Section
-                *widgetsSection(previousColor="572364", backgroundColor="EEEEEE", widgetsList=[widget.Systray()]),
+                *widgetsSection(previousColor="0055AA", backgroundColor="EEEEEE", widgetsList=[widget.Systray()]),
                 # Clock Information Section
                 *widgetsSection(previousColor="EEEEEE", backgroundColor="673400", widgetsList=[
                     widget.TextBox(
