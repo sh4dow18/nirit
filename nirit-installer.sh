@@ -103,7 +103,7 @@ main() {
         # Nirit Core Recommended Programs to Better Experience
         MULTIMEDIA="vlc feh gpicview audacious"
         THEMES="lxappearance"
-        OFFICE="qalculate-gtk evince"
+        OFFICE="qalculate-gtk evince gnome-calendar kolourpaint"
         # Ask Questions to Know if install some optional programs
         echo -e "\nCustom Questions:\n"
         QUESTIONS=(
