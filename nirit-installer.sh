@@ -94,6 +94,7 @@ main() {
     IDE=""
     STEAM=""
     HEROIC=""
+    STORES=""
     # Verify if it is the Only Core Method
     if [[ $1 == "-o" ]]; then
         colorize $BROWN "\nChosen Method: Only Core" | tee -a $LOG_FILE
@@ -113,6 +114,7 @@ main() {
             "Do you want to install Visual Studio Code? (y/n): "
             "Do you want to install Steam? (y/n): "
             "Do you want to install Heroic Game Launcher that allows to play games from Epic Games? (y/n): "
+            "Do you want to install Apps Stores? (y/n): "
         )
         for QUESTION in "${QUESTIONS[@]}"; do
             echo -n "$QUESTION"
@@ -137,6 +139,8 @@ main() {
                     "${QUESTIONS[5]}")
                         HEROIC=true
                         ;;
+                    "${QUESTIONS[6]}")
+                        STORES="plasma-discover"
                 esac
             fi
         done
@@ -240,17 +244,20 @@ main() {
             install_programs $HIGH_GREEN "Nvidia Drivers" "0" "$DRIVERS" true
         fi
         if [[ $IDE != "" ]]; then
-            install_programs $LIGHT_BLUE "Visual Studio Code" "25" "$IDE" false
+            install_programs $LIGHT_BLUE "Visual Studio Code" "20" "$IDE" false
         fi
         if [[ $STEAM != "" ]]; then
             no_questions "steam-installer steam/license select true"
-            install_programs $HIGH_BLUE "Steam" "50" "$STEAM" false
+            install_programs $HIGH_BLUE "Steam" "40" "$STEAM" false
             if [[ $DRIVERS != "" ]]; then
                 sudo apt-get install "nvidia-driver-libs:i386" >> $LOG_FILE 2>&1
             fi
         fi
         if [[ $HEROIC == true ]]; then
-            install_github_program $WHITE "Heroic Games Launcher" "75" "Heroic-Games-Launcher/HeroicGamesLauncher"
+            install_github_program $WHITE "Heroic Games Launcher" "60" "Heroic-Games-Launcher/HeroicGamesLauncher"
+        fi
+        if [[ $STORES != "" ]]; then
+            install_programs $HIGH_PURPLE "App Stores" "80" "$STORES" false
         fi
         progress_status $GREEN "Instalation Completed" "100"
     fi
