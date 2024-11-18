@@ -19,7 +19,7 @@ terminal = "alacritty"
 browser = "opera"
 ide = "code"
 screen_capture = "flameshot gui"
-file_manager = "thunar"
+file_manager = "nautilus"
 menu = "rofi -disable-history -show drun"
 # My Information Variables
 documentation_page = "{} https://digital-me.vercel.app/nirit".format(browser)
