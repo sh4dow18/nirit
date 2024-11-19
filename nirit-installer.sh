@@ -96,6 +96,7 @@ main() {
     HEROIC=""
     STORES=""
     DISCORD=false
+    TEAMS=false
     # Verify if it is the Only Core Method
     if [[ $1 == "-o" ]]; then
         colorize $BROWN "\nChosen Method: Only Core" | tee -a $LOG_FILE
@@ -117,6 +118,7 @@ main() {
             "Do you want to install Heroic Game Launcher that allows to play games from Epic Games? (y/n): "
             "Do you want to install Apps Stores? (y/n): "
             "Do you want to install Discord? (y/n): "
+            "Do you want to install Microsoft Teams (y/n): "
         )
         for QUESTION in "${QUESTIONS[@]}"; do
             echo -n "$QUESTION"
@@ -146,6 +148,9 @@ main() {
                         ;;
                     "${QUESTIONS[7]}")
                         DISCORD=true
+                        ;;
+                    "${QUESTIONS[8]}")
+                        TEAMS=true
                         ;;
                 esac
             fi
@@ -250,26 +255,32 @@ main() {
             install_programs $HIGH_GREEN "Nvidia Drivers" "0" "$DRIVERS" true
         fi
         if [[ $IDE != "" ]]; then
-            install_programs $LIGHT_BLUE "Visual Studio Code" "16" "$IDE" false
+            install_programs $LIGHT_BLUE "Visual Studio Code" "14" "$IDE" false
         fi
         if [[ $STEAM != "" ]]; then
             no_questions "steam-installer steam/license select true"
-            install_programs $HIGH_BLUE "Steam" "32" "$STEAM" false
+            install_programs $HIGH_BLUE "Steam" "28" "$STEAM" false
             if [[ $DRIVERS != "" ]]; then
                 sudo apt-get install "nvidia-driver-libs:i386" >> $LOG_FILE 2>&1
             fi
         fi
         if [[ $HEROIC == true ]]; then
-            install_github_program $WHITE "Heroic Games Launcher" "48" "Heroic-Games-Launcher/HeroicGamesLauncher"
+            install_github_program $WHITE "Heroic Games Launcher" "42" "Heroic-Games-Launcher/HeroicGamesLauncher"
         fi
         if [[ $STORES != "" ]]; then
-            install_programs $HIGH_PURPLE "App Stores" "64" "$STORES" false
+            install_programs $HIGH_PURPLE "App Stores" "56" "$STORES" false
         fi
         if [[ $DISCORD == true ]]; then
-            progress_status $ORANGE "Installing Discord..." "80"
+            progress_status $ORANGE "Installing Discord..." "70"
             wget "https://discord.com/api/download?platform=linux&format=deb" -O discord.deb >> $LOG_FILE 2>&1
             sudo apt-get install ./discord.deb >> $LOG_FILE 2>&1
             rm ./discord.deb >> $LOG_FILE 2>&1
+        fi
+        if [[ $TEAMS == true ]]; then
+            progress_status $LIGHT_BLUE "Installing Microsoft Teams..." "84"
+            wget $(wget -qO - https://api.github.com/repos/IsmaelMartinez/teams-for-linux/releases | grep browser_download_url | cut -d '"' -f 4 | grep "amd64" | grep ".deb" | head -n 1) -O microsoft-teams.deb >> $LOG_FILE 2>&1
+            sudo apt install ./microsoft-teams.deb >> $LOG_FILE 2>&1
+            rm microsoft-teams.deb >> $LOG_FILE 2>&1
         fi
         progress_status $GREEN "Instalation Completed" "100"
     fi
