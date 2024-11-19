@@ -266,6 +266,9 @@ main() {
         fi
         if [[ $HEROIC == true ]]; then
             install_github_program $WHITE "Heroic Games Launcher" "42" "Heroic-Games-Launcher/HeroicGamesLauncher"
+            sudo dpkg --add-architecture i386 >> $LOG_FILE 2>&1
+            sudo apt-get update >> $LOG_FILE 2>&1
+            sudo apt-get install -y wine wine32 wine64 libwine libwine:i386 fonts-wine >> $LOG_FILE 2>&1
         fi
         if [[ $STORES != "" ]]; then
             install_programs $HIGH_PURPLE "App Stores" "56" "$STORES" false
