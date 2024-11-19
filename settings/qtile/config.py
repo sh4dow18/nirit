@@ -3,12 +3,10 @@
 
 # Created by Sh4dow18
 # My Github: https://www.github.com/sh4dow18
-# My Website: https://sh4dow18.vercel.app
 
 # Libraries Needed
-from typing import List
 from libqtile import bar, layout, widget
-from libqtile.config import Click, Drag, Group, Key, Match, Screen
+from libqtile.config import Drag, Group, Key, Screen
 from libqtile.lazy import lazy
 # Helpful Keys
 super_key = "mod4"
@@ -16,7 +14,7 @@ alt_gr_key = "mod5"
 shift = "shift"
 # Default Apps
 terminal = "alacritty"
-browser = "opera"
+browser = "firefox"
 ide = "code"
 screen_capture = "flameshot gui"
 file_manager = "nautilus"
@@ -49,9 +47,9 @@ keys = [Key(key[0], key[1], *key[2:]) for key in [
     ([alt_gr_key], "s", lazy.spawn(screen_capture)),
     ([alt_gr_key], "t", lazy.spawn(file_manager)),
     # Manage Volume
-    ([super_key], "F9", lazy.spawn(muteVolume)),
-    ([super_key], "F10", lazy.spawn(decreseVolume)),
-    ([super_key], "F11", lazy.spawn(increaseVolume)),
+    ([], "XF86AudioMute", lazy.spawn(muteVolume)),
+    ([], "XF86AudioLowerVolume", lazy.spawn(decreseVolume)),
+    ([], "XF86AudioRaiseVolume", lazy.spawn(increaseVolume)),
     # Qtile Behavior
     ([super_key, "control"], "r", lazy.restart()),
     ([super_key, "control"], "q", lazy.shutdown())
@@ -59,14 +57,9 @@ keys = [Key(key[0], key[1], *key[2:]) for key in [
 # ---------- Windows Groups Settings ----------
 # Groups List
 # Get the icons at https://www.nerdfonts.com/cheat-sheet (you need a Nerd Font)
-# Opera Icon: nf-fa-opera ( )
 # Visual Studio Icon: nf-dev-visualstudio ( )
-# Terminar Icon: nf-dev-terminal ( )
-# Group Icon: nf-fa-group ( )
-# Controller Icon: nf-fa-gamepad ( )
-# Video Camera Icon: nf-fa-video_camera ( )
 # Layers Icon: nf-fae-layers ( )
-groups = [Group(i) for i in ["", "", "", "", "","", ""]]
+groups = [Group(i) for i in ["", ""]]
 # Asign Key Bindings to Each Group that allows to Manipulate Windows in Groups
 for i, j in enumerate(groups):
     number_key = str(i + 1)
@@ -85,7 +78,7 @@ layouts = [
     # layout.Floating(),
     # layout.Matrix(),
     layout.Max(),
-    # layout.MonadTall(),
+    layout.MonadTall(),
     # layout.MonadThreeCol(),
     # layout.MonadWide(),
     # layout.Plasma(),
@@ -180,22 +173,25 @@ screens = [
                 )]),
                 # Disk Information Section
                 *widgetsSection(previousColor="AA0000", backgroundColor="444444", widgetsList=[
-                    # Change the device to your own
-                    # This can be Known with "ls /dev" command
-                    widget.HDD(
-                        device="nvme0n1",
-                        format="NVME: {HDDPercent}%"
+                    # Shows the available space on your main drive
+                    widget.DF(
+                        visible_on_warn=False,
+                        format="DISK: {uf}{m}b {r:.0f}%"
                     ),
                     # Change tag sensor to your Disk Sensor
                     # This Can Be Known with "sensors" command, but it is not the name, it is the tag
                     widget.ThermalSensor(
                         tag_sensor="Composite"
-                    )
+                    ),
                 ]),
+                # GPU Information Section
+                *widgetsSection(previousColor="444444", backgroundColor="572364", widgetsList=[widget.NvidiaSensors(
+                    format="GPU: {temp}°C"
+                )]),
                 # Web Connection Information Section
                 # Change the Interface to your own
                 # This Can Be Known with "ip addr" command
-                *widgetsSection(previousColor="444444", backgroundColor="006600", widgetsList=[widget.Net(
+                *widgetsSection(previousColor="572364", backgroundColor="006600", widgetsList=[widget.Net(
                     interface="enp34s0",
                     format=" :  {down:2.1f}{down_suffix} -  {up:2.1f}{up_suffix}",
                     prefix="M"
@@ -218,6 +214,10 @@ screens = [
                     inactive="AAAAAA",
                     padding=5
                 ),
+                # Shows the amount of windows in the actual group
+                widget.WindowCount(
+                    fmt="| Cantidad de Ventanas: {}"
+                ),
                 # Spacer to Separate Group Box from other Widgets Sections
                 widget.Spacer(),
                 # Check Updates Information Section
@@ -226,7 +226,7 @@ screens = [
                     display_format="  {updates}",
                     no_update_string="  0",
                     fontsize=18,
-		    update_interval=5
+		            update_interval=5
                 )], padding=5),
                 # Current Layout  Information Section
                 *widgetsSection(previousColor="AA0000", backgroundColor="0055AA", widgetsList=[
