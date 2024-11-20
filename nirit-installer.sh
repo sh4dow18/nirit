@@ -80,7 +80,7 @@ main() {
     # Nirit Core Programs
     LOGIN="xorg lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings"
     DESKTOP="x11-xserver-utils python3-pip python3-xcffib python3-cairocffi libpangocairo-1.0-0 python3-psutil apt-show-versions"
-    FILES="zip unzip gnome-text-editor nautilus"
+    FILES="zip unzip gnome-text-editor nautilus gcp"
     MENUS="rofi"
     DEVICES="udiskie ntfs-3g policykit-1-gnome gnome-disk-utility lxrandr blueman cbatticon gvfs-backends"
     TERMINAL="exa fish bat alacritty"
