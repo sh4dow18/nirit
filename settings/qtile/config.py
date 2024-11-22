@@ -139,7 +139,7 @@ screens = [
                     length=5
                 ),
                 widget.Image(
-                    filename="~/.nirit/logo.png",
+                    filename="~/.config/nirit/logo.png",
                     margin=1,
                 ),
                 widget.Spacer(

@@ -9,6 +9,6 @@ ibus start &
 connman-gtk &
 pasystray &
 dunst &
-feh --bg-scale ~/.nirit/wallpaper.jpg &
+feh --bg-scale ~/.config/nirit/wallpaper.jpg &
 /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &
 qtile start

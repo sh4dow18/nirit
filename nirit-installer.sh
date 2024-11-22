@@ -80,13 +80,13 @@ main() {
     # Nirit Core Programs
     LOGIN="xorg lightdm lightdm-gtk-greeter lightdm-gtk-greeter-settings"
     DESKTOP="x11-xserver-utils python3-pip python3-xcffib python3-cairocffi libpangocairo-1.0-0 python3-psutil apt-show-versions"
-    FILES="zip unzip gnome-text-editor nautilus gcp"
+    FILES="zip unzip gnome-text-editor nautilus gcp feh"
     MENUS="rofi"
     DEVICES="udiskie ntfs-3g policykit-1-gnome gnome-disk-utility lxrandr blueman cbatticon gvfs-backends"
     TERMINAL="exa fish bat alacritty"
     AUDIO="pulseaudio pamixer pavucontrol pasystray"
     NOTIFICATIONS="dunst libnotify-bin"
-    UTILITIES="flameshot ibus gnome-system-monitor connman connman-gtk"
+    UTILITIES="flameshot ibus gnome-system-monitor connman connman-gtk git jq"
     # Nirit Important Variables
     BROWSER="firefox-esr"
     LIBREOFFICE="libreoffice"
@@ -104,7 +104,7 @@ main() {
     elif [[ $1 == "-n" ]]; then
         colorize $BROWN "\nChosen Method: Normal" | tee -a $LOG_FILE
         # Nirit Core Recommended Programs to Better Experience
-        MULTIMEDIA="vlc feh gpicview audacious"
+        MULTIMEDIA="vlc gpicview audacious"
         THEMES="lxappearance"
         OFFICE="qalculate-gtk evince gnome-calendar kolourpaint"
         # Ask Questions to Know if install some optional programs
@@ -381,14 +381,14 @@ main() {
     # Init Final Configuration
     progress_status $GRAY "Installing Final Files..." "90"
     # Creating Nirit Directory
-    sudo mkdir $HOME/.nirit >> $LOG_FILE 2>&1
+    sudo mkdir $HOME/.config/nirit >> $LOG_FILE 2>&1
+    mkdir $HOME/.config/nirit/logs >> $LOG_FILE 2>&1
     # Installing Default Wallpaper
-    cp settings/start/wallpaper.jpg $HOME/.nirit/ >> $LOG_FILE 2>&1
+    cp settings/start/wallpaper.jpg $HOME/.config/nirit/ >> $LOG_FILE 2>&1
     # Installing Nirit Logo
-    cp settings/start/logo.png $HOME/.nirit/ >> $LOG_FILE 2>&1
+    cp settings/start/logo.png $HOME/.config/nirit/ >> $LOG_FILE 2>&1
     # Changing the new files owner
     sudo chown -R $USER:$USER $HOME/.config >> $LOG_FILE 2>&1
-    sudo chown -R $USER:$USER $HOME/.nirit >> $LOG_FILE 2>&1
     sudo chown -R $USER:$USER /usr/share/icons >> $LOG_FILE 2>&1
     sudo chown $USER:$USER $HOME/gtkrc-2.0 >> $LOG_FILE 2>&1
     sudo chown $USER:$USER /usr/share/rofi/themes >> $LOG_FILE 2>&1
