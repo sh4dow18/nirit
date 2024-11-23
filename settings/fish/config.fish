@@ -45,19 +45,55 @@ function nirit-set-sink
 	echo "------------------------------------------" >> $LOGFILE
 end
 
-# Helps to install programs easier and prettier
-function nirit-install
-	set LOGFILE ~/.config/nirit/logs/nirit-install.log
+# Helps to add a program to rofi category easier and prettier
+function nirit-add-to-category
+	set LOGFILE ~/.config/nirit/logs/nirit-add-to-category.log
   echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
-	echo "Installing '$argv'..."
-	sudo apt-get install -y $argv >> $LOGFILE 2>&1
-	if test $status != 0
-		echo "$argv cannot be installed" | tee -a $LOGFILE
-		echo "------------------------------------------" >> $LOGFILE
+	set CATEGORIESLIST "Audio" "Communication" "Development" "Devices" "Files" "Games" "Internet" "Multimedia" "Office" "Utilities" "Other"
+	set CATEGORY $argv[2]
+	if ! contains $CATEGORY $CATEGORIESLIST
+		echo "$CATEGORY is not a valid category" | tee -a $INSTALLLOGFILE
 		return
 	end
-	echo "$argv installed" | tee -a $LOGFILE
-	echo "------------------------------------------" >> $LOGFILE
+	set FOUND false
+	set PROGRAM $argv[1]
+	for DESKTOPFILE in (grep -l "Exec=$PROGRAM" /usr/share/applications/*.desktop)
+		set FOUND true
+		if grep -q "^Categories=" $DESKTOPFILE
+			sudo sed -i "/^Categories=/c\Categories=$CATEGORY" $DESKTOPFILE
+		else
+			echo "Categories=$CATEGORY" | sudo tee -a $DESKTOPFILE > /dev/null
+		end
+	end
+	if test $FOUND = true
+		echo "$PROGRAM added in $CATEGORY category" | tee -a $LOGFILE
+	else
+		echo "$PROGRAM cannot be added in $CATEGORY category" | tee -a $LOGFILE
+	end
+end
+
+# Helps to install programs easier and prettier
+function nirit-install
+	set INSTALLLOGFILE ~/.config/nirit/logs/nirit-install.log
+  echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $INSTALLLOGFILE 2>&1
+	set CATEGORIESLIST "Audio" "Communication" "Development" "Devices" "Files" "Games" "Internet" "Multimedia" "Office" "Utilities" "Other"
+	set CATEGORY $argv[2]
+	if ! contains $CATEGORY $CATEGORIESLIST
+		echo "$CATEGORY is not a valid category" | tee -a $INSTALLLOGFILE
+		return
+	end
+	set PROGRAM $argv[1]
+	echo "Installing $PROGRAM..."
+	sudo apt-get install -y $PROGRAM >> $INSTALLLOGFILE 2>&1
+	if test $status != 0
+		echo "$PROGRAM cannot be installed" | tee -a $INSTALLLOGFILE
+		echo "------------------------------------------" >> $INSTALLLOGFILE
+		return
+	end
+	echo "$PROGRAM installed" | tee -a $INSTALLLOGFILE
+	echo "Adding $PROGRAM to $CATEGORY category..." | tee -a $INSTALLLOGFILE
+	nirit-add-to-category $PROGRAM $CATEGORY | tee -a $INSTALLLOGFILE
+	echo "------------------------------------------" >> $INSTALLLOGFILE
 end
 
 # Helps to uninstall programs easier and prettier

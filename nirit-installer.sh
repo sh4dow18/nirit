@@ -36,6 +36,16 @@ install_github_program() {
 no_questions() {
     echo "$1" | sudo debconf-set-selections >> $LOG_FILE 2>&1
 }
+add_to_rofi_category() {
+    ls "/usr/share/applications/$1.desktop" >> $LOG_FILE 2>&1
+    if [[ $? -eq 0 ]]; then
+        if grep -q "^Categories=" "/usr/share/applications/$1.desktop"; then
+            sed -i "/^Categories=/c\Categories=$2" "/usr/share/applications/$1.desktop"
+        else
+            echo "Categories=$2" >> "/usr/share/applications/$1.desktop"
+        fi
+    fi
+}
 # Main Menu
 main() {
     # Color Variables
@@ -312,6 +322,7 @@ main() {
     #user-session=default
     # Installing Qtile Configuration
     progress_status $ORANGE "Installing Qtile Configuration..." "27"
+    sed -i "s|/home/sh4dow18|/home/$USER|g" settings/qtile/config.py 2>> $LOG_FILE
     # Getting CPU Sensor validating if it is an Intel CPU or AMD CPU
     CPU_SENSOR=$(lsmod | grep -E 'coretemp|k10temp' | head -n 1 | cut -d " " -f 1)
     # If it is an AMD CPU, use "Tctl"
@@ -350,9 +361,48 @@ main() {
     sudo cp -r settings/alacritty $HOME/.config/ >> $LOG_FILE 2>&1
     # Installing Rofi Menu Configuration
     progress_status $HIGH_PURPLE "Installing Rofi Configuration..." "45"
-    sudo cp settings/rofi/launcher.rasi /usr/share/rofi/themes/ >> $LOG_FILE 2>&1
+    sudo cp settings/rofi/nirit.rasi /usr/share/rofi/themes/ >> $LOG_FILE 2>&1
     mkdir $HOME/.config/rofi >> $LOG_FILE 2>&1
     cp settings/rofi/config.rasi $HOME/.config/rofi/ >> $LOG_FILE 2>&1
+    cp settings/rofi/rofi-with-categories.sh $HOME/.config/rofi/ >> $LOG_FILE 2>&1
+    grep -l "Terminal=true" /usr/share/applications/*.desktop | xargs rm >> $LOG_FILE 2>&1
+    add_to_rofi_category "org.gnome.TextEditor" "Files"
+    add_to_rofi_category "org.gnome.Nautilus" "Files"
+    add_to_rofi_category "org.gnome.DiskUtility" "Devices"
+    add_to_rofi_category "lxrandr" "Devices"
+    add_to_rofi_category "blueman-adapters" "Devices"
+    add_to_rofi_category "blueman-manager" "Devices"
+    add_to_rofi_category "pavucontrol" "Audio"
+    add_to_rofi_category "libreoffice-base" "Office"
+    add_to_rofi_category "libreoffice-calc" "Office"
+    add_to_rofi_category "libreoffice-draw" "Office"
+    add_to_rofi_category "libreoffice-impress" "Office"
+    add_to_rofi_category "libreoffice-math" "Office"
+    add_to_rofi_category "libreoffice-startcenter" "Office"
+    add_to_rofi_category "libreoffice-writer" "Office"
+    add_to_rofi_category "libreoffice-xsltfilter" "Office"
+    add_to_rofi_category "qalculate-gtk" "Office"
+    add_to_rofi_category "org.gnome.Evince" "Office"
+    add_to_rofi_category "org.gnome.Calendar" "Office"
+    add_to_rofi_category "org.kde.kolourpaint" "Office"
+    add_to_rofi_category "vlc" "Multimedia"
+    add_to_rofi_category "gpicview" "Multimedia"
+    add_to_rofi_category "audacious" "Multimedia"
+    add_to_rofi_category "code" "Development"
+    mv $HOME/.local/share/applications/steam.desktop /usr/share/applications/ >> $LOG_FILE 2>&1
+    rm $HOME/.local/share/applications/* >> $LOG_FILE 2>&1
+    add_to_rofi_category "steam" "Games"
+    add_to_rofi_category "heroic" "Games"
+    add_to_rofi_category "discord" "Communication"
+    add_to_rofi_category "teams-for-linux" "Communication"
+    add_to_rofi_category "opera" "Internet"
+    add_to_rofi_category "firefox-esr" "Internet"
+    add_to_rofi_category "Alacritty" "Utilities"
+    add_to_rofi_category "org.flameshot.Flameshot" "Utilities"
+    add_to_rofi_category "gnome-system-monitor" "Utilities"
+    add_to_rofi_category "lxappearance" "Utilities"
+    add_to_rofi_category "nvidia-driver" "Utilities"
+    add_to_rofi_category "org.kde.discover" "Utilities"
     # Changing to the "Fish" shell and Installing "Fish" Configuration
     progress_status $HIGH_GREEN "Installing Fish Configuration..." "54"
     sudo chsh -s /bin/fish $USER >> $LOG_FILE 2>&1

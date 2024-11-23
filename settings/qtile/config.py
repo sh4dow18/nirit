@@ -19,6 +19,7 @@ ide = "code"
 screen_capture = "flameshot gui"
 file_manager = "nautilus"
 menu = "rofi -disable-history -show drun"
+menu_with_categories = "bash /home/sh4dow18/.config/rofi/rofi-with-categories.sh"
 # My Information Variables
 documentation_page = "{} https://digital-me.vercel.app/nirit".format(browser)
 # Volume Variables
@@ -41,7 +42,8 @@ keys = [Key(key[0], key[1], *key[2:]) for key in [
     # Spawn Apps
     ([alt_gr_key], "F1", lazy.spawn(documentation_page)),
     ([super_key], "Return", lazy.spawn(terminal)),
-    ([super_key], "m", lazy.spawn(menu)),
+    ([super_key], "m", lazy.spawn(menu_with_categories)),
+    ([super_key, "control"], "m", lazy.spawn(menu)),
     ([alt_gr_key], "f", lazy.spawn(browser)),
     ([alt_gr_key], "c", lazy.spawn(ide)),
     ([alt_gr_key], "s", lazy.spawn(screen_capture)),

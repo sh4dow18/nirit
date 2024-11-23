@@ -1,1 +1,5 @@
-@theme "/usr/share/rofi/themes/launcher.rasi"
+configuration {
+    show-icons: true;
+    drun-display-format: "{icon} {name}";
+}
+@theme "/usr/share/rofi/themes/nirit.rasi"
