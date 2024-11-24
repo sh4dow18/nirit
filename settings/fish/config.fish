@@ -78,7 +78,7 @@ function nirit-add-to-category
 	set FOUND false
 	set PROGRAM $argv[1]
 	set CATEGORY $argv[2]
-	for DESKTOPFILE in (grep -l "Exec=$PROGRAM" /usr/share/applications/*.desktop)
+	for DESKTOPFILE in (grep -l "Exec=.*$PROGRAM" /usr/share/applications/*.desktop)
 		set FOUND true
 		if grep -q "^Categories=" $DESKTOPFILE
 			sudo sed -i "/^Categories=/c\Categories=$CATEGORY" $DESKTOPFILE
@@ -90,6 +90,7 @@ function nirit-add-to-category
 		echo "$PROGRAM added in $CATEGORY category" | tee -a $LOGFILE
 	else
 		echo "$PROGRAM cannot be added in $CATEGORY category" | tee -a $LOGFILE
+		echo "Reason: No desktop file found to run $PROGRAM"
 	end
 end
 
@@ -98,8 +99,8 @@ function nirit-install
 	set INSTALLLOGFILE ~/.config/nirit/logs/nirit-install.log
   echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $INSTALLLOGFILE 2>&1
 	echo "Input: $argv" >> $INSTALLLOGFILE
-	set HELP "Usage: nirit-install PROGRAM CATEGORY"
-	if test (count $argv) -lt 2
+	set HELP "Usage: nirit-install PROGRAM [CATEGORY]"
+	if test (count $argv) -lt 1
     echo $HELP | tee -a $INSTALLLOGFILE
     return
 	end
@@ -107,23 +108,29 @@ function nirit-install
 		echo $HELP | tee -a $INSTALLLOGFILE
 		return
 	end
-	set CATEGORIESLIST "Audio" "Communication" "Development" "Devices" "Files" "Games" "Internet" "Multimedia" "Office" "Utilities" "Other"
 	set CATEGORY $argv[2]
-	if ! contains $CATEGORY $CATEGORIESLIST
-		echo "$CATEGORY is not a valid category" | tee -a $INSTALLLOGFILE
-		return
+	if test "$CATEGORY" != ""
+		set CATEGORIESLIST "Audio" "Communication" "Development" "Devices" "Files" "Games" "Internet" "Multimedia" "Office" "Utilities" "Other"
+		if ! contains $CATEGORY $CATEGORIESLIST
+			echo "$CATEGORY is not a valid category" | tee -a $INSTALLLOGFILE
+			return
+		end
 	end
 	set PROGRAM $argv[1]
 	echo "Installing $PROGRAM..."
 	sudo apt-get install -y $PROGRAM >> $INSTALLLOGFILE 2>&1
 	if test $status != 0
+		set REASON (cat $INSTALLLOGFILE | tail -n 1)
 		echo "$PROGRAM cannot be installed" | tee -a $INSTALLLOGFILE
+		echo "Reason: $REASON" | tee -a $INSTALLLOGFILE
 		echo "------------------------------------------" >> $INSTALLLOGFILE
 		return
 	end
 	echo "$PROGRAM installed" | tee -a $INSTALLLOGFILE
-	echo "Adding $PROGRAM to $CATEGORY category..." | tee -a $INSTALLLOGFILE
-	nirit-add-to-category $PROGRAM $CATEGORY | tee -a $INSTALLLOGFILE
+	if test "$CATEGORY" != ""
+		echo "Adding $PROGRAM to $CATEGORY category..." | tee -a $INSTALLLOGFILE
+		nirit-add-to-category $PROGRAM $CATEGORY | tee -a $INSTALLLOGFILE
+	end
 	echo "------------------------------------------" >> $INSTALLLOGFILE
 end
 
@@ -145,7 +152,9 @@ function nirit-uninstall
 	echo -e "Uninstalling all programs that start with $PROGRAM..." | tee -a $LOGFILE
 	bash -c "sudo apt-get purge -y $PROGRAM* && sudo apt-get autoremove -y" >> $LOGFILE 2>&1
 	if test $status != 0
+		set REASON (cat $LOGFILE | tail -n 1)
 		echo "$PROGRAM cannot be uninstalled" | tee -a $LOGFILE
+		echo "Reason: $REASON" | tee -a $LOGFILE
 		echo "------------------------------------------" >> $LOGFILE
 		return
 	end
@@ -228,7 +237,7 @@ function nirit-github-install
 	set LOGFILE ~/.config/nirit/logs/nirit-github-install.log
   echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
 	echo "Input: $argv" >> $LOGFILE
-	set HELP "Usage: nirit-github-install GITHUB-USER/REPOSITORY-NAME"
+	set HELP "Usage: nirit-github-install GITHUB-USER/REPOSITORY-NAME [CATEGORY]"
 	if test (count $argv) -lt 1
     echo $HELP | tee -a $LOGFILE
     return
@@ -236,6 +245,14 @@ function nirit-github-install
 	if contains -- "--help" $argv
 		echo $HELP | tee -a $LOGFILE
 		return
+	end
+	set CATEGORY $argv[2]
+	if test "$CATEGORY" != ""
+		set CATEGORIESLIST "Audio" "Communication" "Development" "Devices" "Files" "Games" "Internet" "Multimedia" "Office" "Utilities" "Other"
+		if ! contains $CATEGORY $CATEGORIESLIST
+			echo "$CATEGORY is not a valid category" | tee -a $LOGFILE
+			return
+		end
 	end
 	set REPOSITORY $argv[1]
 	echo "Searching Last Release of $REPOSITORY" | tee -a $LOGFILE
@@ -252,8 +269,15 @@ function nirit-github-install
 	sudo apt-get install -y ./release.deb >> $LOGFILE 2>&1
 	if test $status -eq 0
 		echo "$REPOSITORY $TAG installed" | tee -a $LOGFILE
+		if test "$CATEGORY" != ""
+			set PROGRAM (echo $REPOSITORY | cut -d "/" -f 2)
+			echo "Adding $PROGRAM to $CATEGORY category..." | tee -a $LOGFILE
+			nirit-add-to-category $PROGRAM $CATEGORY | tee -a $LOGFILE
+		end
 	else
+		set REASON (cat $LOGFILE | tail -n 1)
 		echo "$REPOSITORY $TAG was not installed" | tee -a $LOGFILE
+		echo "Reason: $REASON" | tee -a $LOGFILE
 	end
 	rm release.deb >> $LOGFILE 2>&1
 	echo "------------------------------------------" >> $LOGFILE
@@ -323,7 +347,9 @@ function nirit-install-from-url
 	echo "Installing $DEB..." | tee -a $LOGFILE
 	sudo apt-get install -y ./$DEB >> $LOGFILE 2>&1
 	if test $status != 0
+		set REASON (cat $LOGFILE | tail -n 1)
 		echo "$DEB cannot be installed" | tee -a $LOGFILE
+		echo "Reason: $REASON" | tee -a $LOGFILE
 		echo "------------------------------------------" >> $LOGFILE
 		return
 	end
