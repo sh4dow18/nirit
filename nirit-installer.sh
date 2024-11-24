@@ -420,6 +420,8 @@ main() {
     sudo mv ComixCursors-Opaque-White/ /usr/share/icons/ >> $LOG_FILE 2>&1
     sudo mkdir /usr/share/icons/default/ >> $LOG_FILE 2>&1
     sudo cp settings/gtk/cursor/index.theme /usr/share/icons/default/ >> $LOG_FILE 2>&1
+    # Installing Adwaita-Dark
+    cp -r settings/gtk/install/* $HOME/.config/
     # Installing Grub Theme
     progress_status $LIGHT_BLUE "Installing Grub Theme..." "81"
     sudo unzip settings/grub/darkmatter.zip >> $LOG_FILE 2>&1
