@@ -333,17 +333,13 @@ main() {
     fi
     # Change CPU Sensor in Qtile Config
     sed -i "s/tag_sensor=\"CPU_SENSOR_TAG\"/tag_sensor=\"$CPU_SENSOR_TAG\"/g" settings/qtile/config.py 2>> $LOG_FILE
-    # Getting Disk Part's Major to Know in which Disk is Mounted root
-    DISK_PART_MAJ=$(lsblk -o NAME,MAJ:MIN,MOUNTPOINT | sed "s/  */ /g" | grep ' /$' | cut -d " " -f 2 | cut -d ":" -f 1)
-    # Getting Disk with Disk Part's Major
-    DISK=$(lsblk -o NAME,MAJ:MIN,MOUNTPOINT | sed "s/  */ /g" | grep "$DISK_PART_MAJ:0" | cut -d " " -f 1)
-    # Changing Disk in Qtile Config
-    sed -i "s/device=\"DISK\"/device=\"$DISK\"/g" settings/qtile/config.py 2>> $LOG_FILE
-    sed -i "s/format=\"DISK: {HDDPercent}%\"/format=\"$DISK: {HDDPercent}%\"/g" settings/qtile/config.py 2>> $LOG_FILE
     # Getting the Primary Network Interface
     INTERFACE=$(ip addr | grep "^2" | cut -d " " -f 2 | cut -d ":" -f 1)
     # Changing Network Interface in Qtile Config
     sed -i "s/interface=\"INTERFACE\"/interface=\"$INTERFACE\"/g" settings/qtile/config.py 2>> $LOG_FILE
+    if [[ $DRIVERS != "" ]]; then
+        sed -i "/#.*Nvidia/s/^# //" settings/qtile/config.py 2>> $LOG_FILE
+    fi
     # If the Opera Browser was chosen, switch firefox to opera in Qtile Config
     if [[ $BROWSER == "opera-stable" ]]; then
         sed -i 's/browser = "firefox"/browser = "opera"/g' settings/qtile/config.py 2>> $LOG_FILE

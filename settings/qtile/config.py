@@ -186,18 +186,16 @@ screens = [
                         tag_sensor="Composite"
                     ),
                 ]),
-                # GPU Information Section
-                *widgetsSection(previousColor="444444", backgroundColor="572364", widgetsList=[widget.NvidiaSensors(
-                    format="GPU: {temp}°C"
-                )]),
                 # Web Connection Information Section
                 # Change the Interface to your own
                 # This Can Be Known with "ip addr" command
-                *widgetsSection(previousColor="572364", backgroundColor="006600", widgetsList=[widget.Net(
-                    interface="enp34s0",
+                *widgetsSection(previousColor="444444", backgroundColor="006600", widgetsList=[widget.Net(
+                    interface="INTERFACE",
                     format=" :  {down:2.1f}{down_suffix} -  {up:2.1f}{up_suffix}",
                     prefix="M"
                 )]),
+                # Nvidia GPU Information Section
+                # *widgetsSection(previousColor="006600", backgroundColor="572364", widgetsList=[widget.NvidiaSensors(format="GPU: {temp}°C")]),
             ],
             # Bar height in Pixels
             20
