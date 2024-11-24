@@ -13,14 +13,25 @@ alias nirit-reboot "systemctl reboot"
 function nirit-set-wallpaper
 	set LOGFILE ~/.config/nirit/logs/nirit-set-wallpaper.log
 	echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
-	/bin/cp $argv ~/.config/nirit/wallpaper.jpg >> $LOGFILE 2>&1
+	echo "Input: $argv" >> $LOGFILE
+	set HELP "Usage: nirit-set-wallpaper NEW-WALLPAPER-PATH"
+	if test (count $argv) -lt 1
+    echo $HELP | tee -a $LOGFILE
+    return
+	end
+	if contains -- "--help" $argv
+		echo $HELP | tee -a $LOGFILE
+		return
+	end
+	set WALLPAPER $argv[1]
+	/bin/cp $WALLPAPER ~/.config/nirit/wallpaper.jpg >> $LOGFILE 2>&1
 	if test $status != 0
-		echo "Wallpaper not Changed, new Wallpaper not Found" | tee -a $LOGFILE
+		echo "Wallpaper not Changed, $WALLPAPER not Found" | tee -a $LOGFILE
 		echo "------------------------------------------" >> $LOGFILE
 		return
 	end
 	feh --bg-scale ~/.config/nirit/wallpaper.jpg >> $LOGFILE 2>&1
-	echo "Wallpaper Changed" | tee -a $LOGFILE
+	echo "Wallpaper Changed to $WALLPAPER" | tee -a $LOGFILE
 	echo "------------------------------------------" >> $LOGFILE
 end
 
@@ -28,6 +39,11 @@ end
 function nirit-set-sink
 	set LOGFILE ~/.config/nirit/logs/nirit-set-sink.log
 	echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
+	echo "Input: $argv" >> $LOGFILE
+	if contains -- "--help" $argv
+		echo "Usage: nirit-set-sink" | tee -a $LOGFILE
+		return
+	end
 	pamixer --list-sinks | tee -a $LOGFILE
 	echo -e "\nWhich number of sink do you choose to use?" | tee -a $LOGFILE
 	read ANSWER
@@ -49,14 +65,19 @@ end
 function nirit-add-to-category
 	set LOGFILE ~/.config/nirit/logs/nirit-add-to-category.log
   echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
-	set CATEGORIESLIST "Audio" "Communication" "Development" "Devices" "Files" "Games" "Internet" "Multimedia" "Office" "Utilities" "Other"
-	set CATEGORY $argv[2]
-	if ! contains $CATEGORY $CATEGORIESLIST
-		echo "$CATEGORY is not a valid category" | tee -a $INSTALLLOGFILE
+	echo "Input: $argv" >> $LOGFILE
+	set HELP "Usage: nirit-add-to-category PROGRAM CATEGORY"
+	if test (count $argv) -lt 2
+    echo $HELP | tee -a $LOGFILE
+    return
+	end
+	if contains -- "--help" $argv
+		echo $HELP | tee -a $LOGFILE
 		return
 	end
 	set FOUND false
 	set PROGRAM $argv[1]
+	set CATEGORY $argv[2]
 	for DESKTOPFILE in (grep -l "Exec=$PROGRAM" /usr/share/applications/*.desktop)
 		set FOUND true
 		if grep -q "^Categories=" $DESKTOPFILE
@@ -76,6 +97,16 @@ end
 function nirit-install
 	set INSTALLLOGFILE ~/.config/nirit/logs/nirit-install.log
   echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $INSTALLLOGFILE 2>&1
+	echo "Input: $argv" >> $INSTALLLOGFILE
+	set HELP "Usage: nirit-install PROGRAM CATEGORY"
+	if test (count $argv) -lt 2
+    echo $HELP | tee -a $INSTALLLOGFILE
+    return
+	end
+	if contains -- "--help" $argv
+		echo $HELP | tee -a $INSTALLLOGFILE
+		return
+	end
 	set CATEGORIESLIST "Audio" "Communication" "Development" "Devices" "Files" "Games" "Internet" "Multimedia" "Office" "Utilities" "Other"
 	set CATEGORY $argv[2]
 	if ! contains $CATEGORY $CATEGORIESLIST
@@ -100,14 +131,25 @@ end
 function nirit-uninstall
 	set LOGFILE ~/.config/nirit/logs/nirit-uninstall.log
   echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
-	echo -e "Uninstalling all programs that start with '$argv'..." | tee -a $LOGFILE
-	bash -c "sudo apt-get purge -y $argv* && sudo apt-get autoremove -y" >> $LOGFILE 2>&1
+	echo "Input: $argv" >> $LOGFILE
+	set HELP "Usage: nirit-uninstall PROGRAM"
+	if test (count $argv) -lt 1
+    echo $HELP | tee -a $LOGFILE
+    return
+	end
+	if contains -- "--help" $argv
+		echo $HELP | tee -a $LOGFILE
+		return
+	end
+	set PROGRAM $argv[1]
+	echo -e "Uninstalling all programs that start with $PROGRAM..." | tee -a $LOGFILE
+	bash -c "sudo apt-get purge -y $PROGRAM* && sudo apt-get autoremove -y" >> $LOGFILE 2>&1
 	if test $status != 0
-		echo "Uninstallation Failed" | tee -a $LOGFILE
+		echo "$PROGRAM cannot be uninstalled" | tee -a $LOGFILE
 		echo "------------------------------------------" >> $LOGFILE
 		return
 	end
-	echo "Uninstallation Finished" | tee -a $LOGFILE
+	echo "$PROGRAM uninstalled" | tee -a $LOGFILE
 	echo "------------------------------------------" >> $LOGFILE
 end
 
@@ -115,14 +157,18 @@ end
 function nirit-fix-opera
 	set LOGFILE ~/.config/nirit/logs/nirit-fix-opera.log
   echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
+	echo "Input: $argv" >> $LOGFILE
+	if contains -- "--help" $argv
+		echo "Usage: nirit-fix-opera" | tee -a $LOGFILE
+		return
+	end
 	ls /usr/bin/opera >> $LOGFILE 2>&1
 	if test $status != 0
 		echo "Opera is not Installed, install first to use this function" | tee -a $LOGFILE
 		echo "------------------------------------------" >> $LOGFILE
-		return
 	end
 	echo "Downloading FFMPEG Library..." | tee -a $LOGFILE
-	set RELEASE (wget -qO - https://api.github.com/repos/Ld-Hagen/fix-opera-linux-ffmpeg-widevine/releases) >> $LOGFILE 2>&1
+	set RELEASE (wget -qO - https://api.github.com/repos/Ld-Hagen/fix-opera-linux-ffmpeg-widevine/releases)
 	if test $status != 0
 		echo "FFMPEG Library not Found in Github Releases"
 		echo "------------------------------------------" >> $LOGFILE
@@ -132,8 +178,12 @@ function nirit-fix-opera
 	unzip libffmpeg.so.zip >> $LOGFILE 2>&1
 	echo "Installing FFMPEG Library..." | tee -a $LOGFILE
 	sudo mv libffmpeg.so /usr/lib/x86_64-linux-gnu/opera/libffmpeg.so >> $LOGFILE 2>&1
+	if test $status -eq 0
+		echo "Opera Fixed, Restart Opera" | tee -a $LOGFILE
+	else
+		echo "Opera cannot be fixed"
+	end
 	rm libffmpeg.so.zip >> $LOGFILE 2>&1
-	echo "Opera Fixed, Restart Opera" | tee -a $LOGFILE
 	echo "------------------------------------------" >> $LOGFILE
 end
 
@@ -141,9 +191,18 @@ end
 function nirit-clone-repository
 	set LOGFILE ~/.config/nirit/logs/nirit-clone-repository.log
   echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
-	set REPOSITORY (echo $argv | cut -d " " -f 1) >> $LOGFILE 2>&1
-	echo $argv | grep "\-\-dev" >> $LOGFILE 2>&1
-	if test $status -eq 0
+	echo "Input: $argv" >> $LOGFILE
+	set HELP "Usage: nirit-clone-repository GITHUB-USER/REPOSITORY-NAME [--dev Clone to Develop]"
+	if test (count $argv) -lt 1
+    echo $HELP | tee -a $LOGFILE
+    return
+	end
+	if contains -- "--help" $argv
+		echo $HELP | tee -a $LOGFILE
+		return
+	end
+	set REPOSITORY $argv[1] >> $LOGFILE 2>&1
+	if contains -- "--dev" $argv
 		echo "Cloning as Dev..." | tee -a $LOGFILE
 		git clone https://github.com/$REPOSITORY >> $LOGFILE 2>&1
 	else
@@ -151,7 +210,12 @@ function nirit-clone-repository
 		git clone --depth 1 https://github.com/$REPOSITORY >> $LOGFILE 2>&1
 	end
 	if test $status != 0
-		echo "Repository $REPOSITORY not found" | tee -a $LOGFILE
+		ls (echo $REPOSITORY | cut -d "/" -f 2) >> $LOGFILE 2>&1
+		if test $status -eq 0
+			echo "Repository $REPOSITORY already cloned" | tee -a $LOGFILE
+		else
+			echo "Repository $REPOSITORY not found" | tee -a $LOGFILE
+		end
 		echo "------------------------------------------" >> $LOGFILE
 		return
 	end
@@ -163,22 +227,33 @@ end
 function nirit-github-install
 	set LOGFILE ~/.config/nirit/logs/nirit-github-install.log
   echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
-	echo "Searching Last Release of $argv" | tee -a $LOGFILE
-	set RELEASE $(wget -qO - https://api.github.com/repos/$argv/releases) >> $LOGFILE 2>&1
+	echo "Input: $argv" >> $LOGFILE
+	set HELP "Usage: nirit-github-install GITHUB-USER/REPOSITORY-NAME"
+	if test (count $argv) -lt 1
+    echo $HELP | tee -a $LOGFILE
+    return
+	end
+	if contains -- "--help" $argv
+		echo $HELP | tee -a $LOGFILE
+		return
+	end
+	set REPOSITORY $argv[1]
+	echo "Searching Last Release of $REPOSITORY" | tee -a $LOGFILE
+	set RELEASE $(wget -qO - https://api.github.com/repos/$REPOSITORY/releases) >> $LOGFILE 2>&1
 	if test $status != 0
-		echo "$argv release not found" | tee -a $LOGFILE
+		echo "$REPOSITORY release not found" | tee -a $LOGFILE
 		echo "------------------------------------------" >> $LOGFILE
 		return
 	end
 	set TAG $(echo $RELEASE | jq | grep tag_name | cut -d '"' -f 4 | head -n 1) >> $LOGFILE 2>&1
-	echo "$argv $TAG found, downloading..." | tee -a $LOGFILE
+	echo "$REPOSITORY $TAG found, downloading..." | tee -a $LOGFILE
 	wget $(echo $RELEASE | jq | grep browser_download_url | cut -d '"' -f 4 | grep "amd64" | grep ".deb" | head -n 1) -O release.deb >> $LOGFILE 2>&1
-	echo "$argv $TAG downloaded, trying to install..." | tee -a $LOGFILE
+	echo "$REPOSITORY $TAG downloaded, trying to install..." | tee -a $LOGFILE
 	sudo apt-get install -y ./release.deb >> $LOGFILE 2>&1
 	if test $status -eq 0
-		echo "$argv $TAG installed" | tee -a $LOGFILE
+		echo "$REPOSITORY $TAG installed" | tee -a $LOGFILE
 	else
-		echo "$argv $TAG was not installed" | tee -a $LOGFILE
+		echo "$REPOSITORY $TAG was not installed" | tee -a $LOGFILE
 	end
 	rm release.deb >> $LOGFILE 2>&1
 	echo "------------------------------------------" >> $LOGFILE
@@ -188,6 +263,18 @@ end
 function nirit-init-github-project
 	set LOGFILE ~/.config/nirit/logs/nirit-init-github-project.log
   echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
+	echo "Input: $argv" >> $LOGFILE
+	set HELP "Usage: nirit-init-github-project GITHUB-USER"
+	if test (count $argv) -lt 1
+    echo $HELP | tee -a $LOGFILE
+    return
+	end
+	if contains -- "--help" $argv
+		echo $HELP | tee -a $LOGFILE
+		return
+	end
+	set USER $argv[1]
+	set REPOSITORY (pwd | sed "s/\//\n/g" | tail -n 1)
 	echo "Starting Git Project..." | tee -a $LOGFILE
 	git init >> $LOGFILE 2>&1
 	echo "Adding Project Files to Staged Area..." | tee -a $LOGFILE
@@ -197,15 +284,15 @@ function nirit-init-github-project
 	echo "Changing Branch Name to Main..." | tee -a $LOGFILE
 	git branch -m main >> $LOGFILE 2>&1
 	echo "Adding Github Remote Origin..." | tee -a $LOGFILE
-	git remote add origin "https://github.com/$argv/$(pwd | sed "s/\//\n/g" | tail -n 1).git" >> $LOGFILE 2>&1
+	git remote add origin "https://github.com/$USER/$REPOSITORY.git" >> $LOGFILE 2>&1
 	echo "Pushing Project to Github..." | tee -a $LOGFILE
 	git push -u origin main >> $LOGFILE 2>&1
 	if test $status != 0
-		echo "Project Created, but cannot push to Github" | tee -a $LOGFILE
+		echo "Project Created as $REPOSITORY, but cannot push to Github" | tee -a $LOGFILE
 		echo "------------------------------------------" >> $LOGFILE
 		return
 	end
-	echo "Project Created and Pushed Successfully" | tee -a $LOGFILE
+	echo "Project Created and Pushed Successfully in https://github.com/$USER/$REPOSITORY" | tee -a $LOGFILE
 	echo "------------------------------------------" >> $LOGFILE
 end
 
@@ -213,23 +300,35 @@ end
 function nirit-install-from-url
 	set LOGFILE ~/.config/nirit/logs/nirit-install-from-url.log
   echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
-	set FROMDOMAIN $(echo $argv | cut -d "/" -f 3) >> $LOGFILE 2>&1
-	echo "Getting Program from $FROMDOMAIN..." | tee -a $LOGFILE
-	wget $argv -O $FROMDOMAIN.deb >> $LOGFILE 2>&1
-	if test $status != 0
-		echo "$FROMDOMAIN.deb not found" | tee -a $LOGFILE
-    echo "------------------------------------------" >> $LOGFILE
+	echo "Input: $argv" >> $LOGFILE
+	set HELP "Usage: nirit-install-from-url URL"
+	if test (count $argv) -lt 1
+    echo $HELP | tee -a $LOGFILE
     return
-  end
-	echo "Installing $FROMDOMAIN.deb..." | tee -a $LOGFILE
-	sudo apt-get install -y ./$FROMDOMAIN.deb >> $LOGFILE 2>&1
+	end
+	if contains -- "--help" $argv
+		echo $HELP | tee -a $LOGFILE
+		return
+	end
+	set URL $argv[1]
+	set FROMDOMAIN $(echo $URL | cut -d "/" -f 3) >> $LOGFILE 2>&1
+	set DEB "$FROMDOMAIN.deb"
+	echo "Getting Program from $FROMDOMAIN..." | tee -a $LOGFILE
+	wget $URL -O $DEB >> $LOGFILE 2>&1
 	if test $status != 0
-		echo "$FROMDOMAIN.deb cannot be installed" | tee -a $LOGFILE
+		echo "$DEB not found" | tee -a $LOGFILE
 		echo "------------------------------------------" >> $LOGFILE
 		return
 	end
-  rm $FROMDOMAIN.deb >> $LOGFILE 2>&1
-	echo "$FROMDOMAIN.deb Installed" | tee -a $LOGFILE
+	echo "Installing $DEB..." | tee -a $LOGFILE
+	sudo apt-get install -y ./$DEB >> $LOGFILE 2>&1
+	if test $status != 0
+		echo "$DEB cannot be installed" | tee -a $LOGFILE
+		echo "------------------------------------------" >> $LOGFILE
+		return
+	end
+	rm $DEB >> $LOGFILE 2>&1
+	echo "$DEB Installed" | tee -a $LOGFILE
 	echo "------------------------------------------" >> $LOGFILE
 end
 
@@ -237,6 +336,11 @@ end
 function nirit-update-system
 	set UPDATELOGFILE ~/.config/nirit/logs/nirit-update-system.log
   echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $UPDATELOGFILE 2>&1
+	echo "Input: $argv" >> $UPDATELOGFILE
+	if contains -- "--help" $argv
+		echo "Usage: nirit-update-system" | tee -a $UPDATELOGFILE
+		return
+	end
 	echo "Updating APT Programs..." | tee -a $UPDATELOGFILE
 	sudo apt-get update >> $UPDATELOGFILE 2>&1
 	sudo apt-get upgrade -y >> $UPDATELOGFILE 2>&1
@@ -255,7 +359,7 @@ function nirit-update-system
 	ls /usr/bin/discord >> $UPDATELOGFILE 2>&1
 	if test $status -eq 0
 		if test $ONLYOFFICE != 0
-			echo "" | tee -a $UPDATELOGFILE
+			echo -e "\n" | tee -a $UPDATELOGFILE
 		end
 		echo "Updating Discord..." | tee -a $UPDATELOGFILE
 		nirit-install-from-url "https://discord.com/api/download?platform=linux&format=deb" | tee -a $UPDATELOGFILE
@@ -264,16 +368,16 @@ function nirit-update-system
 	echo "Updating Github Releases..." | tee -a $UPDATELOGFILE
 	ls /usr/bin/heroic >> $UPDATELOGFILE 2>&1
 	set HEROIC $status
-  if test $HEROIC -eq 0
+	if test $HEROIC -eq 0
 		echo -e "\nUpdating Heroic Games Launcher..." | tee -a $UPDATELOGFILE
 		nirit-github-install Heroic-Games-Launcher/HeroicGamesLauncher | tee -a $UPDATELOGFILE
 		echo "" | tee -a $UPDATELOGFILE
 	end
 	ls /usr/bin/teams-for-linux >> $UPDATELOGFILE 2>&1
-  if test $status -eq 0
+	if test $status -eq 0
 		if test $HEROIC != 0
-    	echo "" | tee -a $UPDATELOGFILE
-    end
+			echo -e "\n" | tee -a $UPDATELOGFILE
+		end
 		echo "Updating Teams for Linux..." | tee -a $UPDATELOGFILE
 		nirit-github-install IsmaelMartinez/teams-for-linux | tee -a $UPDATELOGFILE
 		echo "" | tee -a $UPDATELOGFILE
@@ -294,6 +398,11 @@ end
 function nirit-update-project
 	set LOGFILE ~/.config/nirit/logs/nirit-update-project.log
   echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
+	echo "Input: $argv" >> $LOGFILE
+	if contains -- "--help" $argv
+		echo "Usage: nirit-update-project" | tee -a $LOGFILE
+		return
+	end
 	echo "Searching Nirit Project Updates..."
 	set RELEASE (wget -qO - https://api.github.com/repos/sh4dow18/nirit/releases) >> $LOGFILE 2>&1
 	if test $status != 0
@@ -333,6 +442,11 @@ end
 function nirit-cleaner
 	set CLEANLOGFILE ~/.config/nirit/logs/nirit-cleaner.log
   echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $CLEANLOGFILE 2>&1
+	echo "Input: $argv" >> $CLEANLOGFILE
+	if contains -- "--help" $argv
+		echo "Usage: nirit-cleaner" | tee -a $CLEANLOGFILE
+		return
+	end
 	echo "Removing Temp Files..." | tee -a $CLEANLOGFILE
 	bash -c "sudo rm -r /tmp/*" >> $CLEANLOGFILE 2>&1
 	echo "Cleaning APT..." | tee -a $CLEANLOGFILE
@@ -349,25 +463,34 @@ end
 
 # Helps to show nirit logs from all nirit programs
 function nirit-log
+	set HELP "Usage: nirit-log NIRIT-PROGRAM"
+	if test (count $argv) -lt 1
+    echo $HELP
+    return
+	end
+	if contains -- "--help" $argv
+		echo $HELP
+		return
+	end
 	if test "$argv" = "--clean"
 		bash -c "rm ~/.config/nirit/logs/* > /dev/null 2>&1"
 		echo "Nirit Logs Removed"
 		return
 	end
+	set PROGRAM $argv[1]
 	set NOLOGSLIST "nirit-log" "nirit-information" "nirit-shutdown" "nirit-reboot"
-	if contains $argv $NOLOGSLIST
-		echo "$argv does not keep logs"
-		return
-  end
-	echo $argv | cut -d " " -f 1 | grep "nirit" > /dev/null 2>&1
-	if test $status != 0
-		echo "$argv is not a Nirit App"
+	if contains $PROGRAM $NOLOGSLIST
+		echo "$PROGRAM does not keep logs"
 		return
 	end
-	ls ~/.config/nirit/logs/$argv.log > /dev/null 2>&1
-	if test $status != 0
-		echo "$argv have no logs"
+	if not string match -q "nirit*" $PROGRAM
+		echo "$PROGRAM is not a Nirit App"
 		return
 	end
-	cat ~/.config/nirit/logs/$argv.log
+	ls ~/.config/nirit/logs/$PROGRAM.log > /dev/null 2>&1
+	if test $status != 0
+		echo "$PROGRAM have no logs"
+		return
+	end
+	cat ~/.config/nirit/logs/$PROGRAM.log
 end
