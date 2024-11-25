@@ -5,7 +5,7 @@
 ![NIRIT](https://digital-me.vercel.app/nirit/nirit.png)
 
 <div align="center">
-  <img src="https://img.shields.io/badge/1.0.0-00AA00?style=for-the-badge&logo=github&labelColor=gray" alt="RELEASE" />
+  <img src="https://img.shields.io/badge/2.0.0-00AA00?style=for-the-badge&logo=github&labelColor=gray" alt="RELEASE" />
   <img src="https://img.shields.io/badge/GPL%203.0-0066AA?style=for-the-badge&logo=gnu&labelColor=gray" alt="LICENSE" />
   <img src="https://img.shields.io/badge/Bash-000000?style=for-the-badge&logo=GNU%20Bash&logoColor=white&labelColor=gray" alt="BASH" />
   <img src="https://img.shields.io/badge/Python-DD8800?style=for-the-badge&logo=python&logoColor=white&labelColor=gray" alt="PYTHON" />
@@ -45,4 +45,4 @@ If you want to know about this license, click
 
 To see the complete and updated documentation of this project, you can go to the **Nirit** Main Documentation Page:
 
-- **[Nirit Main Documentation Page](https://digital-me.vercel.app/nirit)**
+- **[Nirit Main Documentation Page](https://digital-me.vercel.app/nirit)** (Only 1.0.0 at the moment)
