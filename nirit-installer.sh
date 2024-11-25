@@ -10,7 +10,8 @@ help() {
     colorize "\nUse: $0 INSTALLATION_METHOD\n"
     echo "Options:"
     echo -e "\t-o\tOnly Core Method"
-    echo -e "\t-n\tNormal Method\n"
+    echo -e "\t-n\tNormal Method"
+    echo -e "\t-u\tUpdate Method\n"
 }
 is_installed() {
     dpkg -l | grep -q "^ii  $1 "
@@ -73,6 +74,7 @@ main() {
     echo "/ /\  / | || |   | || |_ " | tee -a $LOG_FILE
     echo "\_\ \/  |_||_|   |_| \__|" | tee -a $LOG_FILE
     echo "Welcome to the Nirit Installer!" | tee -a $LOG_FILE
+    echo "Version: 2.0.0" | tee -a $LOG_FILE
     # Main Verifications
     OPERATING_SYSTEM=$(cat /etc/os-release | grep PRETTY_NAME | cut -d "=" -f 2 | sed 's/"//g' | cut -d " " -f 1)
     if [[ $OPERATING_SYSTEM != "Debian" ]]; then
@@ -165,6 +167,30 @@ main() {
                 esac
             fi
         done
+    elif [[ $1 == "-u" ]]; then
+        colorize $BROWN "\nChosen Method: Update" | tee -a $LOG_FILE
+        {
+            ACTUAL_VERSION=$(cat /home/$(who | head -n 1 | cut -d " " -f 1)/.config/fish/config.fish | grep "Nirit Version" | cut -d ":" -f 2 | sed "s/  *//g" | cut -d '"' -f 1)
+            MODE=$(cat /home/$(who | head -n 1 | cut -d " " -f 1)/.config/fish/config.fish | grep "Mode Installed" | cut -d ":" -f 2 | sed "s/  *//g" | cut -d '"' -f 1)
+        } 2>> $LOG_FILE
+        if [[ $ACTUAL_VERSION == "" ]]; then
+            if [[ ! -e /etc/X11/nirit ]]; then
+                colorize $RED "\nNo Nirit Installation Detected\n" | tee -a $LOG_FILE
+                exit 1
+            fi
+            ACTUAL_VERSION="v1.0.0"
+            MODE="Normal"
+        fi
+        colorize $LIGHT_BLUE "Actual Version Detected: $ACTUAL_VERSION" | tee -a $LOG_FILE
+        if [[ $ACTUAL_VERSION == "v2.0.0" ]]; then
+            colorize $GREEN "\nNirit is updated to its latest version v2.0.0" | tee -a $LOG_FILE
+            exit 1
+        fi
+        UPDATED_VERSION=$(printf "%s\n%s\n" "$ACTUAL_VERSION" "v2.0.0" | sort -V | tail -n 1)
+        if [[ $UPDATED_VERSION != "v2.0.0" ]]; then
+            colorize $RED "\nThe version you are trying to install is older than the current one" | tee -a $LOG_FILE
+            exit 1
+        fi
     # If it is a Invalid Argument, show help and exit with code 1
     else
         colorize $RED "\nInvalid Argument $1" | tee -a $LOG_FILE
@@ -241,18 +267,18 @@ main() {
     install_programs $PURPLE "Have Audio" "60" "$AUDIO" true
     install_programs $HIGH_BLUE "Have Notifications" "70" "$NOTIFICATIONS" true
     install_programs $GRAY "Utilities" "80" "$UTILITIES" false
-    if [[ $BROWSER == "opera-stable" ]]; then
+    if [[ $BROWSER == "opera-stable" && $1 != "-u" ]]; then
         no_questions "opera-stable opera-stable/add-deb-source boolean false"
     fi
     install_programs $HIGH_RED "Browser" "90" "$BROWSER" false
     progress_status $GREEN "Instalation Completed" "100"
-    if [[ $1 == "-n" ]]; then
+    if [[ $1 == "-n" || $MODE == "Normal" ]]; then
         # Installing Nirit Recommended
         colorize $HIGH_PURPLE "\nInstalling Nirit Recommended..." | tee -a $LOG_FILE
         install_programs $ORANGE "View Multimedia Files" "0" "$MULTIMEDIA" true
         install_programs $HIGH_BLUE "Change Themes" "33" "$THEMES" true
         install_programs $HIGH_RED "Office" "66" "$OFFICE $LIBREOFFICE" true
-        if [[ $LIBREOFFICE == "" ]]; then
+        if [[ $LIBREOFFICE == "" || $(is_installed "onlyoffice-desktopeditors") ]]; then
             wget https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors_amd64.deb -O onlyoffice.deb >> $LOG_FILE 2>&1
             sudo apt-get install -y ./onlyoffice.deb >> $LOG_FILE 2>&1
             rm onlyoffice.deb >> $LOG_FILE 2>&1
@@ -260,11 +286,11 @@ main() {
         progress_status $GREEN "Instalation Completed" "100"
         # Installing Nirit Extras
         colorize $WHITE "\nInstalling Nirit Extras..." | tee -a $LOG_FILE
-        if [[ $DRIVERS != "" ]]; then
+        if [[ $DRIVERS != "" || $(is_installed "nvidia-driver") ]]; then
             no_questions "nvidia-driver nvidia-driver/accept-terms boolean true"
             install_programs $HIGH_GREEN "Nvidia Drivers" "0" "$DRIVERS" true
         fi
-        if [[ $IDE != "" ]]; then
+        if [[ $IDE != "" || $(is_installed "code") ]]; then
             install_programs $LIGHT_BLUE "Visual Studio Code" "14" "$IDE" false
         fi
         if [[ $STEAM != "" ]]; then
@@ -274,28 +300,39 @@ main() {
                 sudo apt-get install "nvidia-driver-libs:i386" >> $LOG_FILE 2>&1
             fi
         fi
-        if [[ $HEROIC == true ]]; then
+        if [[ $HEROIC == true || $(is_installed "heroic") ]]; then
             install_github_program $WHITE "Heroic Games Launcher" "42" "Heroic-Games-Launcher/HeroicGamesLauncher"
             sudo dpkg --add-architecture i386 >> $LOG_FILE 2>&1
             sudo apt-get update >> $LOG_FILE 2>&1
             sudo apt-get install -y wine wine32 wine64 libwine libwine:i386 fonts-wine >> $LOG_FILE 2>&1
         fi
-        if [[ $STORES != "" ]]; then
+        if [[ $STORES != "" || $(is_installed "plasma-discover") ]]; then
             install_programs $HIGH_PURPLE "App Stores" "56" "$STORES" false
         fi
-        if [[ $DISCORD == true ]]; then
+        if [[ $DISCORD == true || $(is_installed "discord") ]]; then
             progress_status $ORANGE "Installing Discord..." "70"
             wget "https://discord.com/api/download?platform=linux&format=deb" -O discord.deb >> $LOG_FILE 2>&1
             sudo apt-get install ./discord.deb >> $LOG_FILE 2>&1
             rm ./discord.deb >> $LOG_FILE 2>&1
         fi
-        if [[ $TEAMS == true ]]; then
+        if [[ $TEAMS == true || $(is_installed "teams-for-linux") ]]; then
             progress_status $LIGHT_BLUE "Installing Microsoft Teams..." "84"
             wget $(wget -qO - https://api.github.com/repos/IsmaelMartinez/teams-for-linux/releases | grep browser_download_url | cut -d '"' -f 4 | grep "amd64" | grep ".deb" | head -n 1) -O microsoft-teams.deb >> $LOG_FILE 2>&1
             sudo apt install ./microsoft-teams.deb >> $LOG_FILE 2>&1
             rm microsoft-teams.deb >> $LOG_FILE 2>&1
         fi
         progress_status $GREEN "Instalation Completed" "100"
+    fi
+    if [[ $1 == "-u" ]]; then
+        echo -e "\nIt is highly recommended to do a clean installation of Nirit Settings to make sure everything works well"
+        echo "If you have custom settings, make sure you have a backup to merge with the new settings later"
+        echo -n "Do you want to do a clean installation of Nirit Settings right now? (y/n): "
+        read ANSWER
+        if [[ $ANSWER == [nN] ]]; then
+            sed -i "s/Nirit Version: $ACTUAL_VERSION/Nirit Version: v2.0.0/g" cat /home/$(who | head -n 1 | cut -d " " -f 1)/.config/fish/config.fish 2>> $LOG_FILE
+            echo "Nirit Updated without Settings" | tee -a $LOG_FILE
+            exit 0
+        fi
     fi
     colorize $HIGH_RED "\nInstalling Nirit Configuration..." | tee -a $LOG_FILE
     progress_status $ORANGE "Creating Config Directory..." "0"
