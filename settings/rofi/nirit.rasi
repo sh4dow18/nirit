@@ -1,6 +1,7 @@
 /* ROUNDED THEME FOR ROFI */
 /* Author: Newman Sanchez (https://github.com/newmanls) */
-/* Modified to Nirit by sh4dow18 */
+/* Modified by Ramsés Solano (sh4dow18) */
+/* My Github: https://www.github.com/sh4dow18 */
 
 * {
     font:   "agave Nerd Font bold 12";

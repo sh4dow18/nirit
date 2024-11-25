@@ -1,24 +1,27 @@
+# Created by Ramsés Solano (sh4dow18)
+# My Github: https://www.github.com/sh4dow18
+
 colors:
   primary:
-    background: '0x000000'
-    foreground: '0xdddddd'
+    background: "0x000000"
+    foreground: "0xdddddd"
   normal:
-    green: '0x00ff00'
-    blue: '0x73b7ff'
+    green: "0x00ff00"
+    blue: "0x73b7ff"
   bright:
-    green: '0x00ff00'
-    blue: '0x73b7ff'
+    green: "0x00ff00"
+    blue: "0x73b7ff"
 font:
   normal:
-    family: 'Agave Nerd Font'
+    family: "Agave Nerd Font"
     style: Normal
   bold:
-    family: 'Agave Nerd Font'
+    family: "Agave Nerd Font"
     style: Bold
   italic:
-    family: 'Agave Nerd Font'
+    family: "Agave Nerd Font"
     style: Italic
   bold_italic:
-    family: 'Agave Nerd Font'
+    family: "Agave Nerd Font"
     style: Bold Italic
   size: 17

@@ -1,4 +1,8 @@
 #!/bin/bash
+
+# Created by Ramsés Solano (sh4dow18)
+# My Github: https://www.github.com/sh4dow18
+
 # Categories Array
 CATEGORIES=("Audio" "Communication" "Development" "Devices" "Files" "Games" "Internet" "Multimedia" "Office" "Utilities" "Other")
 # Icons to each category

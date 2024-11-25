@@ -1,3 +1,6 @@
+/* Created by Ramsés Solano (sh4dow18) */
+/* My Github: https://www.github.com/sh4dow18 */
+
 configuration {
     show-icons: true;
     drun-display-format: "{icon} {name}";

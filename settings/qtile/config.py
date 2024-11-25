@@ -1,7 +1,7 @@
 # Qtile Configuration File
 # http://www.qtile.org/
 
-# Created by Sh4dow18
+# Created by Ramsés Solano (sh4dow18)
 # My Github: https://www.github.com/sh4dow18
 
 # Libraries Needed
@@ -195,7 +195,7 @@ screens = [
                     prefix="M"
                 )]),
                 # Nvidia GPU Information Section
-                # *widgetsSection(previousColor="006600", backgroundColor="572364", widgetsList=[widget.NvidiaSensors(format="GPU: {temp}°C")]),
+                # *widgetsSection(previousColor="006600", backgroundColor="572364", widgetsList=[widget.NvidiaSensors(format="Nvidia GPU: {temp}°C")]),
             ],
             # Bar height in Pixels
             20
