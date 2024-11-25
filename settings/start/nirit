@@ -1,10 +1,27 @@
 #!/bin/bash
 
+# Created by Ramsés Solano (sh4dow18)
+# My Github: https://www.github.com/sh4dow18
+
 # Nirit Desktop Environment Startup File
 
+# If it is a virtual machine, set the resolution to 1920x1080
 xrandr --output Virtual1 --primary --mode 1920x1080
+# Start a udiskie process to automatically mount devices
 udiskie -t &
-nm-applet &
-feh --bg-scale ~/.nirit/wallpaper.jpg &
+# Start a cbatticon process to display a mini battery app in the system tray
+cbatticon &
+# Start an ibus process to display a mini app to change the language in the system tray
+ibus start &
+# Start a connman-gtk process to display a mini application for managing the network in the system tray
+connman-gtk &
+# Start a pasystray process to display a mini app for managing the audio in the system tray
+pasystray &
+# Start a dunst process to display notifications
+dunst &
+# Start a feh process to set a wallpaper
+feh --bg-scale ~/.config/nirit/wallpaper.jpg &
+# Start a Policykit-1 process to manually mount devices in Nautilus
 /usr/lib/policykit-1-gnome/polkit-gnome-authentication-agent-1 &
+# Start Qtile
 qtile start
