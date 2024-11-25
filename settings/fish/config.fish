@@ -509,7 +509,7 @@ function nirit-information
 	echo "Mode Installed: Normal"
 	echo "Repository URL: https://github.com/sh4dow18/nirit"
 	echo "Created By: Ramsés Solano (sh4dow18)"
-	echo "Last Update: 11/25/2024"
+	echo "Last Update: 11/21/2024"
 end
 
 # Helps to update Nirit Project faster and easily
@@ -532,16 +532,16 @@ function nirit-update-project
 		return
 	end
 	# If the Last Nirit Release information was found, set the tag and body information
-  set TAG (echo $RELEASE | jq | grep tag_name | cut -d '"' -f 4 | head -n 1) >> $LOGFILE 2>&1
-	set BODY (echo $RELEASE | jq | grep body | cut -d '"' -f 4) >> $LOGFILE 2>&1
+	set TAG (echo $RELEASE | jq | grep tag_name | cut -d '"' -f 4 | head -n 1 | string trim) >> $LOGFILE 2>&1
+	set CURRENT_VERSION (cat ~/.config/fish/config.fish | grep "Nirit Version" | cut -d ":" -f 2 | sed "s/  *//g" | cut -d '"' -f 1 | head -n 1)
 	# Check if the tag of the latest version is the same as the current one
-	if test "$TAG" = "v2.0.0"
+	if test "$CURRENT_VERSION" = "$TAG"
 		echo "Nirit Project is up to date" | tee -a $LOGFILE
+		return
 	else
 		# If a newer version is found, displays the latest version information
 		echo -e "\nNew Nirit Release $TAG Found\n" | tee -a $LOGFILE
-		echo "$TAG Description:" | tee -a $LOGFILE
-		echo $BODY | tee -a $LOGFILE
+		echo "$TAG Description: https://github.com/sh4dow18/nirit/releases/tag/$TAG" | tee -a $LOGFILE
 		# Ask the user if wants to install the new version
     echo -e "\nDo you want to update Nirit Project? (y/n): "
 		read ANSWER
