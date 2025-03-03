@@ -519,11 +519,16 @@ main() {
     mkdir $HOME/.config/nirit >> $LOG_FILE 2>&1
     # Creating Nirit Logs Directory
     mkdir $HOME/.config/nirit/logs >> $LOG_FILE 2>&1
+    # Creating User Default Directories
+    mkdir $HOME/Apps $HOME/Downloads $HOME/Documents >> $LOG_FILE 2>&1
     # Installing Default Wallpaper
     cp settings/start/wallpaper.jpg $HOME/.config/nirit/ >> $LOG_FILE 2>&1
     # Installing Nirit Logo
     cp settings/start/logo.png $HOME/.config/nirit/ >> $LOG_FILE 2>&1
     # Changing the new files owner
+    chown -R $USER:$USER $HOME/Apps
+    chown -R $USER:$USER $HOME/Downloads
+    chown -R $USER:$USER $HOME/Documents
     chown -R $USER:$USER $HOME/.config >> $LOG_FILE 2>&1
     chown -R $USER:$USER /usr/share/icons >> $LOG_FILE 2>&1
     chown -R $USER:$USER /usr/share/rofi/themes >> $LOG_FILE 2>&1
