@@ -124,7 +124,7 @@ main() {
     TERMINAL="exa fish bat alacritty"
     AUDIO="pulseaudio pamixer pavucontrol pasystray"
     NOTIFICATIONS="dunst libnotify-bin"
-    UTILITIES="flameshot ibus gnome-system-monitor connman connman-gtk git jq"
+    UTILITIES="flameshot ibus gnome-system-monitor connman connman-gtk git jq brightnessctl"
     # Nirit Important Variables
     BROWSER="firefox-esr"
     LIBREOFFICE="libreoffice"

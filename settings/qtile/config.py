@@ -30,6 +30,10 @@ getVolume = "{} --get-volume-human".format(volume)
 muteVolume = "{} --toggle-mute".format(volume)
 increaseVolume = "{} -i 5".format(volume)
 decreseVolume = "{} -d 5".format(volume)
+# Brightness Variables
+brightness = "brightnessctl set"
+increaseBrightness = "{} +10%".format(brightness)
+decreaseBrightness = "{} 10%-".format(brightness)
 # ---------- Key Bindings Settings ----------
 keys = [Key(key[0], key[1], *key[2:]) for key in [
     # Windows Behavior in Layouts
@@ -52,6 +56,9 @@ keys = [Key(key[0], key[1], *key[2:]) for key in [
     ([], "XF86AudioMute", lazy.spawn(muteVolume)),
     ([], "XF86AudioLowerVolume", lazy.spawn(decreseVolume)),
     ([], "XF86AudioRaiseVolume", lazy.spawn(increaseVolume)),
+    # Manage Brightness
+    ([], "XF86MonBrightnessUp", lazy.spawn(increaseBrightness)),
+    ([], "XF86MonBrightnessDown", lazy.spawn(decreaseBrightness)),
     # Qtile Behavior
     ([super_key, "control"], "r", lazy.restart()),
     ([super_key, "control"], "q", lazy.shutdown())
