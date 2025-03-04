@@ -638,3 +638,38 @@ function nirit-log
 	# Show nirit application logs
 	cat ~/.config/nirit/logs/$PROGRAM.log
 end
+
+# Helps create a desktop file for new apps without one
+function nirit-create-desktop-file
+	# Set a log file that saves the time the function was executed, as well as the arguments sent
+	set LOGFILE ~/.config/nirit/logs/nirit-create-desktop-file.log
+  echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
+	echo "Input: $argv" >> $LOGFILE
+	# If the user submitted less than 1 argument or submitted a "--help" argument, show help and exit
+	set HELP "Usage: nirit-create-desktop-file PROGRAM_NAME PROGRAM_PATH ICON_PATH"
+	if test (count $argv) -lt 3
+    echo $HELP | tee -a $LOGFILE
+    return
+	end
+	if contains -- "--help" $argv
+		echo $HELP | tee -a $LOGFILE
+		return
+	end
+	# Set the first argument as the program's name
+	set PROGRAM_NAME $argv[1]
+	# Set the second argument as the program's path
+	set PROGRAM_PATH $argv[2]
+	# Set the first argument as the program's icon path
+	set ICON_PATH $argv[3]
+	# Creating File
+	echo "Creating Desktop File..." | tee -a $LOGFILE
+	echo -e "[Desktop Entry]\nName=$PROGRAM_NAME\nExec=$PROGRAM_PATH\nType=Application\nIcon=$ICON_PATH" | sudo tee /usr/share/applications/$PROGRAM_NAME.desktop >> $LOGFILE 2>&1
+	# Check if the desktop file was created or not
+	if test $status != 0
+		set REASON (cat $LOGFILE | tail -n 1)
+		echo "Desktop file was not created to $PROGRAM_NAME" | tee -a $LOGFILE
+		echo "Reason: $REASON" | tee -a $LOGFILE
+		return
+	end
+	echo "Desktop file was created to $PROGRAM_NAME" | tee -a $LOGFILE
+end
