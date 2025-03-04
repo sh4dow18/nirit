@@ -484,7 +484,7 @@ main() {
     add_to_rofi_category "org.flameshot.Flameshot" "Utilities"
     add_to_rofi_category "gnome-system-monitor" "Utilities"
     add_to_rofi_category "lxappearance" "Utilities"
-    add_to_rofi_category "nvidia-driver" "Utilities"
+    add_to_rofi_category "nvidia-settings" "Utilities"
     add_to_rofi_category "org.kde.discover" "Utilities"
     # Changing to the "Fish" shell and Installing "Fish" Configuration
     progress_status $HIGH_GREEN "Installing Fish Configuration..." "54"
