@@ -446,13 +446,19 @@ function nirit-update-system
 	echo "Input: $argv" >> $UPDATELOGFILE
 	# If the user submitted "--help" argument, show help and exit
 	if contains -- "--help" $argv
-		echo "Usage: nirit-update-system" | tee -a $UPDATELOGFILE
+		echo "Usage: nirit-update-system [-v (More Verbose)]" | tee -a $UPDATELOGFILE
 		return
 	end
 	# Try to Update Deb Apps
 	echo "Updating APT Programs..." | tee -a $UPDATELOGFILE
-	sudo apt-get update >> $UPDATELOGFILE 2>&1
-	sudo apt-get upgrade -y >> $UPDATELOGFILE 2>&1
+	if test "$argv[1]" = "-v"
+		sudo apt-get update | tee -a $UPDATELOGFILE 2>&1
+		sudo apt-get upgrade -y | tee -a $UPDATELOGFILE 2>&1
+		echo "" | tee -a $UPDATELOGFILE 2>&1
+	else
+		sudo apt-get update >> $UPDATELOGFILE 2>&1
+		sudo apt-get upgrade -y >> $UPDATELOGFILE 2>&1
+	end
 	# Check if the update did
 	if test $status != 0
 		echo "APT Programs cannot be updated"
