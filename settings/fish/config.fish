@@ -644,7 +644,6 @@ function nirit-log
 	# Show nirit application logs
 	cat ~/.config/nirit/logs/$PROGRAM.log
 end
-
 # Helps create a desktop file for new apps without one
 function nirit-create-desktop-file
 	# Set a log file that saves the time the function was executed, as well as the arguments sent
@@ -678,4 +677,55 @@ function nirit-create-desktop-file
 		return
 	end
 	echo "Desktop file was created to $PROGRAM_NAME" | tee -a $LOGFILE
+end
+# Helps to easily install packages that are not easy to install with apt
+function nirit-package-manager
+ 	# Set a log file that saves the time the function was executed, as well as the arguments sent
+	set NPG_LOGFILE ~/.config/nirit/logs/nirit-package-manager.log
+  echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $NPG_LOGFILE 2>&1
+	echo "Input: $argv" >> $NPG_LOGFILE
+	# If the user submitted less than 1 argument or submitted a "--help" argument, show help and exit
+	set HELP "Usage: nirit-package-manager PROGRAM_NAME\n\nAvailable Programs:\n\n\t- Onlyoffice Desktop Editors (use: onlyoffice)\n\t- Steam (use: steam)\n\t- Heroic Games Launcher (use: heroic)\n\t- Discord (use: discord)\n\t- Microsoft Teams (use: teams)\n"
+	if test (count $argv) -lt 1
+    echo -e $HELP | tee -a $NPG_LOGFILE
+    return
+	end
+	if contains -- "--help" $argv
+		echo -e $HELP | tee -a $NPG_LOGFILE
+		return
+	end
+	# Set the first argument as the program
+	set PROGRAM "$argv[1]"
+	echo -e "Installing $PROGRAM..." | tee -a $NPG_LOGFILE
+	# Check what package is to download it and install it
+	if test $PROGRAM = "onlyoffice"
+		nirit-install-from-url "https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors_amd64.deb" | tee -a $NPG_LOGFILE
+		nirit-add-to-category "onlyoffice-desktopeditors" "Office" | tee -a $NPG_LOGFILE
+	else if test $PROGRAM = "discord"
+		nirit-install-from-url "https://discord.com/api/download?platform=linux&format=deb" | tee -a $NPG_LOGFILE
+		nirit-add-to-category "discord" "Communication" | tee -a $NPG_LOGFILE
+	else if test $PROGRAM = "heroic"
+		nirit-github-install Heroic-Games-Launcher/HeroicGamesLauncher | tee -a $NPG_LOGFILE
+		nirit-add-to-category "heroic" "Games" | tee -a $NPG_LOGFILE
+	else if test $PROGRAM = "teams"
+		nirit-github-install IsmaelMartinez/teams-for-linux | tee -a $NPG_LOGFILE
+		nirit-add-to-category "teams-for-linux" "Communication" | tee -a $NPG_LOGFILE
+	else if test $PROGRAM = "steam"
+		# If it is steam, check if it is available to install it from apt
+		set FILE /etc/apt/sources.list
+		set ORIGINAL_LINE (grep -v "#" $FILE | grep "deb" | head -n 1)
+		set NEW_LINE "$ORIGINAL_LINE contrib non-free"
+		sudo sed -i "s|^$ORIGINAL_LINE|$NEW_LINE|" $FILE
+		sudo dpkg --add-architecture i386
+		sudo apt-get update >> $NPG_LOGFILE 2>&1
+		sudo apt-get install -y mesa-vulkan-drivers libglx-mesa0:i386 mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386 steam-installer >> $NPG_LOGFILE 2>&1
+		if test $status -eq 0
+			echo "Steam was installed sucessfully" | tee -a $NPG_LOGFILE
+		else
+			echo "Steam Cannot be installed" | tee -a $NPG_LOGFILE
+		end
+		nirit-add-to-category "steam" "Games" | tee -a $NPG_LOGFILE
+	else
+		echo "Program not Found in Available Programs" | tee -a $NPG_LOGFILE
+	end
 end
