@@ -475,7 +475,8 @@ function nirit-update-project
 			git clone --depth 1 https://github.com/sh4dow18/nirit.git >> $LOGFILE 2>&1
 			# Run the Nirit Installer with Update Method
 			echo "Opening Nirit $TAG Updater..." | tee -a $LOGFILE
-			sudo bash nirit/nirit-installer.sh -u | tee -a $LOGFILE
+			cd nirit/
+			sudo bash nirit-installer.sh -u | tee -a $LOGFILE
 			# Check if the Nirit Update was successfull
 			if test $pipestatus[1] != 0
 				echo "Nirit not Updated" | tee -a $LOGFILE
@@ -483,6 +484,7 @@ function nirit-update-project
 				echo "Nirit Updated" | tee -a $LOGFILE
 			end
 			# Remove Nirit Local Repository
+			cd ..
 			sudo rm -r nirit/ >> $LOGFILE 2>&1
 		else
 			echo "Nirit not Updated" | tee -a $LOGFILE
