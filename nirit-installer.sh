@@ -215,13 +215,13 @@ main() {
         fi
         colorize $LIGHT_BLUE "Current Version Detected: $CURRENT_VERSION" | tee -a $LOG_FILE
         # Check if the current version is the latest
-        if [[ $CURRENT_VERSION == "v2.0.0" ]]; then
-            colorize $GREEN "\nNirit is updated to its latest version v2.0.0" | tee -a $LOG_FILE
+        if [[ $CURRENT_VERSION == "v2.1.0" ]]; then
+            colorize $GREEN "\nNirit is updated to its latest version v2.1.0" | tee -a $LOG_FILE
             exit 1
         fi
         # Check if the current version is newer than the installation version
-        UPDATED_VERSION=$(printf "%s\n%s\n" "$CURRENT_VERSION" "v2.0.0" | sort -V | tail -n 1)
-        if [[ $UPDATED_VERSION != "v2.0.0" ]]; then
+        UPDATED_VERSION=$(printf "%s\n%s\n" "$CURRENT_VERSION" "v2.1.0" | sort -V | tail -n 1)
+        if [[ $UPDATED_VERSION != "v2.1.0" ]]; then
             colorize $RED "\nThe version you are trying to install is an older version than the current one you have installed" | tee -a $LOG_FILE
             exit 1
         fi
