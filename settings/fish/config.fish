@@ -117,89 +117,6 @@ function nirit-add-to-category
 		echo "Reason: No desktop file found to run $PROGRAM"
 	end
 end
-
-# Helps to install programs easier and prettier
-function nirit-install
-	# Set a log file that saves the time the function was executed, as well as the arguments sent
-	set INSTALLLOGFILE ~/.config/nirit/logs/nirit-install.log
-  echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $INSTALLLOGFILE 2>&1
-	echo "Input: $argv" >> $INSTALLLOGFILE
-	# If the user submitted less than 1 argument or submitted a "--help" argument, show help and exit
-	set HELP "Usage: nirit-install PROGRAM [CATEGORY]"
-	if test (count $argv) -lt 1
-    echo $HELP | tee -a $INSTALLLOGFILE
-    return
-	end
-	if contains -- "--help" $argv
-		echo $HELP | tee -a $INSTALLLOGFILE
-		return
-	end
-	# Set the second argument as the category
-	set CATEGORY $argv[2]
-	# Check if the category was submitted
-	if test "$CATEGORY" != ""
-		# Check if the submitted category is valid or not
-		set CATEGORIESLIST "Audio" "Communication" "Development" "Devices" "Files" "Games" "Internet" "Multimedia" "Office" "Utilities" "Other"
-		if ! contains $CATEGORY $CATEGORIESLIST
-			echo "$CATEGORY is not a valid category" | tee -a $INSTALLLOGFILE
-			return
-		end
-	end
-	# Set the first argument as the program
-	set PROGRAM $argv[1]
-	# Try to install the program
-	echo "Installing $PROGRAM..." | tee -a $INSTALLLOGFILE
-	sudo apt-get install -y $PROGRAM >> $INSTALLLOGFILE 2>&1
-	# Check if the program was installed or not
-	if test $status != 0
-		set REASON (cat $INSTALLLOGFILE | tail -n 1)
-		echo "$PROGRAM cannot be installed" | tee -a $INSTALLLOGFILE
-		echo "Reason: $REASON" | tee -a $INSTALLLOGFILE
-		echo "------------------------------------------" >> $INSTALLLOGFILE
-		return
-	end
-	echo "$PROGRAM installed" | tee -a $INSTALLLOGFILE
-	# If the category was submitted, try adding the program to the submitted rofi category
-	if test "$CATEGORY" != ""
-		echo "Adding $PROGRAM to $CATEGORY category..." | tee -a $INSTALLLOGFILE
-		nirit-add-to-category $PROGRAM $CATEGORY | tee -a $INSTALLLOGFILE
-	end
-	echo "------------------------------------------" >> $INSTALLLOGFILE
-end
-
-# Helps to uninstall programs easier and prettier
-function nirit-uninstall
-	# Set a log file that saves the time the function was executed, as well as the arguments sent
-	set LOGFILE ~/.config/nirit/logs/nirit-uninstall.log
-  echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
-	echo "Input: $argv" >> $LOGFILE
-	# If the user submitted less than 1 argument or submitted a "--help" argument, show help and exit
-	set HELP "Usage: nirit-uninstall PROGRAM"
-	if test (count $argv) -lt 1
-    echo $HELP | tee -a $LOGFILE
-    return
-	end
-	if contains -- "--help" $argv
-		echo $HELP | tee -a $LOGFILE
-		return
-	end
-	# Set the first argument as the program
-	set PROGRAM $argv[1]
-	# Try to uninstall the program and all those related to it
-	echo "Uninstalling all programs that start with $PROGRAM..." | tee -a $LOGFILE
-	bash -c "sudo apt-get purge -y $PROGRAM* && sudo apt-get autoremove -y" >> $LOGFILE 2>&1
-	# Check if the program or programs were uninstalled or not
-	if test $status != 0
-		set REASON (cat $LOGFILE | tail -n 1)
-		echo "$PROGRAM cannot be uninstalled" | tee -a $LOGFILE
-		echo "Reason: $REASON" | tee -a $LOGFILE
-		echo "------------------------------------------" >> $LOGFILE
-		return
-	end
-	echo "$PROGRAM uninstalled" | tee -a $LOGFILE
-	echo "------------------------------------------" >> $LOGFILE
-end
-
 # Helps to fix multimedia players in opera browser
 function nirit-fix-opera
 	# Set a log file that saves the time the function was executed, as well as the arguments sent
@@ -446,13 +363,19 @@ function nirit-update-system
 	echo "Input: $argv" >> $UPDATELOGFILE
 	# If the user submitted "--help" argument, show help and exit
 	if contains -- "--help" $argv
-		echo "Usage: nirit-update-system" | tee -a $UPDATELOGFILE
+		echo "Usage: nirit-update-system [-v (More Verbose)]" | tee -a $UPDATELOGFILE
 		return
 	end
 	# Try to Update Deb Apps
 	echo "Updating APT Programs..." | tee -a $UPDATELOGFILE
-	sudo apt-get update >> $UPDATELOGFILE 2>&1
-	sudo apt-get upgrade -y >> $UPDATELOGFILE 2>&1
+	if test "$argv[1]" = "-v"
+		sudo apt-get update | tee -a $UPDATELOGFILE 2>&1
+		sudo apt-get upgrade -y | tee -a $UPDATELOGFILE 2>&1
+		echo "" | tee -a $UPDATELOGFILE 2>&1
+	else
+		sudo apt-get update >> $UPDATELOGFILE 2>&1
+		sudo apt-get upgrade -y >> $UPDATELOGFILE 2>&1
+	end
 	# Check if the update did
 	if test $status != 0
 		echo "APT Programs cannot be updated"
@@ -505,11 +428,11 @@ end
 
 # Helps to show Nirit actual information
 function nirit-information
-	echo "Nirit Version: v2.0.0"
+	echo "Nirit Version: v2.1.0"
 	echo "Mode Installed: Normal"
 	echo "Repository URL: https://github.com/sh4dow18/nirit"
 	echo "Created By: Ramsés Solano (sh4dow18)"
-	echo "Last Update: 11/21/2024"
+	echo "Last Update: 2025-10-03"
 end
 
 # Helps to update Nirit Project faster and easily
@@ -553,7 +476,7 @@ function nirit-update-project
 			# Run the Nirit Installer with Update Method
 			echo "Opening Nirit $TAG Updater..." | tee -a $LOGFILE
 			sudo bash nirit/nirit-installer.sh -u | tee -a $LOGFILE
-			# Check if the Nirit Update was successful
+			# Check if the Nirit Update was successfull
 			if test $pipestatus[1] != 0
 				echo "Nirit not Updated" | tee -a $LOGFILE
 			else
@@ -637,4 +560,129 @@ function nirit-log
 	end
 	# Show nirit application logs
 	cat ~/.config/nirit/logs/$PROGRAM.log
+end
+
+# Helps create a desktop file for new apps without one
+function nirit-create-desktop-file
+	# Set a log file that saves the time the function was executed, as well as the arguments sent
+	set LOGFILE ~/.config/nirit/logs/nirit-create-desktop-file.log
+  echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
+	echo "Input: $argv" >> $LOGFILE
+	# If the user submitted less than 1 argument or submitted a "--help" argument, show help and exit
+	set HELP "Usage: nirit-create-desktop-file PROGRAM_NAME PROGRAM_PATH ICON_PATH"
+	if test (count $argv) -lt 3
+    echo $HELP | tee -a $LOGFILE
+    return
+	end
+	if contains -- "--help" $argv
+		echo $HELP | tee -a $LOGFILE
+		return
+	end
+	# Set the first argument as the program's name
+	set PROGRAM_NAME $argv[1]
+	# Set the second argument as the program's path
+	set PROGRAM_PATH $argv[2]
+	# Set the first argument as the program's icon path
+	set ICON_PATH $argv[3]
+	# Creating File
+	echo "Creating Desktop File..." | tee -a $LOGFILE
+	echo -e "[Desktop Entry]\nName=$PROGRAM_NAME\nExec=$PROGRAM_PATH\nType=Application\nIcon=$ICON_PATH" | sudo tee /usr/share/applications/$PROGRAM_NAME.desktop >> $LOGFILE 2>&1
+	# Check if the desktop file was created or not
+	if test $status != 0
+		set REASON (cat $LOGFILE | tail -n 1)
+		echo "Desktop file was not created to $PROGRAM_NAME" | tee -a $LOGFILE
+		echo "Reason: $REASON" | tee -a $LOGFILE
+		return
+	end
+	echo "Desktop file was created to $PROGRAM_NAME" | tee -a $LOGFILE
+end
+# Helps to easily install and uninstall packages from apt and outside apt
+function nirit-package-manager
+ 	# Set a log file that saves the time the function was executed, as well as the arguments sent
+	set NPG_LOGFILE ~/.config/nirit/logs/nirit-package-manager.log
+  echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $NPG_LOGFILE 2>&1
+	echo "Input: $argv" >> $NPG_LOGFILE
+	# If the user submitted less than 1 argument or submitted a "--help" argument, show help and exit
+	set HELP "Usage: nirit-package-manager OPERATION PROGRAM_NAME\n\nAvailable Operations:\n\n\t- Installation (use: install)\n\t- Uninstallation (use: uninstall)\n\nAvailable Programs:\n\n\t- APT Programs\n\t- Onlyoffice Desktop Editors (use: onlyoffice)\n\t- Steam (use: steam)\n\t- Heroic Games Launcher (use: heroic)\n\t- Discord (use: discord)\n\t- Microsoft Teams (use: teams)\n"
+	if test (count $argv) -lt 2
+    echo -e $HELP | tee -a $NPG_LOGFILE
+    return
+	end
+	if contains -- "--help" $argv
+		echo -e $HELP | tee -a $NPG_LOGFILE
+		return
+	end
+	# Set the first argument as the program
+	set OPERATION "$argv[1]"
+	set PROGRAM "$argv[2]"
+	if test $OPERATION = "install"
+		echo -e "Installing $PROGRAM..." | tee -a $NPG_LOGFILE
+		# Check what package is to download it and install it
+		if test $PROGRAM = "onlyoffice"
+			nirit-install-from-url "https://download.onlyoffice.com/install/desktop/editors/linux/onlyoffice-desktopeditors_amd64.deb" | tee -a $NPG_LOGFILE
+			nirit-add-to-category "onlyoffice-desktopeditors" "Office" | tee -a $NPG_LOGFILE
+		else if test $PROGRAM = "discord"
+			nirit-install-from-url "https://discord.com/api/download?platform=linux&format=deb" | tee -a $NPG_LOGFILE
+			nirit-add-to-category "discord" "Communication" | tee -a $NPG_LOGFILE
+		else if test $PROGRAM = "heroic"
+			nirit-github-install Heroic-Games-Launcher/HeroicGamesLauncher | tee -a $NPG_LOGFILE
+			nirit-add-to-category "heroic" "Games" | tee -a $NPG_LOGFILE
+		else if test $PROGRAM = "teams"
+			nirit-github-install IsmaelMartinez/teams-for-linux | tee -a $NPG_LOGFILE
+			nirit-add-to-category "teams-for-linux" "Communication" | tee -a $NPG_LOGFILE
+		else if test $PROGRAM = "steam"
+			# If it is steam, check if it is available to install it from apt
+			set FILE /etc/apt/sources.list
+			set ORIGINAL_LINE (grep -v "#" $FILE | grep "deb" | head -n 1)
+			set NEW_LINE "$ORIGINAL_LINE contrib non-free"
+			sudo sed -i "s|^$ORIGINAL_LINE|$NEW_LINE|" $FILE
+			sudo dpkg --add-architecture i386
+			sudo apt-get update
+			sudo apt-get install -y mesa-vulkan-drivers libglx-mesa0:i386 mesa-vulkan-drivers:i386 libgl1-mesa-dri:i386 steam-installer | tee -a $NPG_LOGFILE
+			if test $status -eq 0
+				echo "Steam was installed sucessfully" | tee -a $NPG_LOGFILE
+			else
+				echo "Steam Cannot be installed" | tee -a $NPG_LOGFILE
+			end
+			nirit-add-to-category "steam" "Games" | tee -a $NPG_LOGFILE
+		else
+			# If it is not an special program, use apt
+			sudo apt-get install -y $PROGRAM | tee -a $NPG_LOGFILE
+		end
+	else if test $OPERATION = "uninstall"
+		echo -e "Uninstalling $PROGRAM..." | tee -a $NPG_LOGFILE
+		# Check what package is and uninstall it
+		bash -c "sudo apt-get purge -y $PROGRAM*" | tee -a $NPG_LOGFILE
+		sudo apt-get autoremove -y | tee -a $NPG_LOGFILE
+	else
+		echo "Operation unavailable"
+	end
+end
+# Helps to easily add paths to path variable and fish config
+function nirit-update-path
+	# Set a log file that saves the time the function was executed, as well as the arguments sent
+	set LOGFILE ~/.config/nirit/logs/nirit-package-manager.log
+  echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
+	echo "Input: $argv" >> $LOGFILE
+	# If the user submitted less than 1 argument or submitted a "--help" argument, show help and exit
+	set HELP "Usage: nirit-update-path PATH_TO_ADD_IN_PATH_VARIABLE"
+	if test (count $argv) -lt 1
+    echo -e $HELP | tee -a $LOGFILE
+    return
+	end
+	if contains -- "--help" $argv
+		echo -e $HELP | tee -a $LOGFILE
+		return
+	end
+	# Set the first argument as the program
+	set NEW_PATH "$argv[1]"
+	# Set path in fish config
+	set -U fish_user_paths $NEW_PATH $fish_user_paths
+	# Check if the path was added
+	if test $status -eq 0
+		# Set new path
+		echo "Path added successfully" | tee -a $LOGFILE
+	else
+		echo "Path cannot be add it" | tee -a $LOGFILE
+	end
 end

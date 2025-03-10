@@ -124,7 +124,7 @@ main() {
     TERMINAL="exa fish bat alacritty"
     AUDIO="pulseaudio pamixer pavucontrol pasystray"
     NOTIFICATIONS="dunst libnotify-bin"
-    UTILITIES="flameshot ibus gnome-system-monitor connman connman-gtk git jq"
+    UTILITIES="flameshot ibus gnome-system-monitor connman connman-gtk git jq brightnessctl"
     # Nirit Important Variables
     BROWSER="firefox-esr"
     LIBREOFFICE="libreoffice"
@@ -484,7 +484,7 @@ main() {
     add_to_rofi_category "org.flameshot.Flameshot" "Utilities"
     add_to_rofi_category "gnome-system-monitor" "Utilities"
     add_to_rofi_category "lxappearance" "Utilities"
-    add_to_rofi_category "nvidia-driver" "Utilities"
+    add_to_rofi_category "nvidia-settings" "Utilities"
     add_to_rofi_category "org.kde.discover" "Utilities"
     # Changing to the "Fish" shell and Installing "Fish" Configuration
     progress_status $HIGH_GREEN "Installing Fish Configuration..." "54"
@@ -519,11 +519,16 @@ main() {
     mkdir $HOME/.config/nirit >> $LOG_FILE 2>&1
     # Creating Nirit Logs Directory
     mkdir $HOME/.config/nirit/logs >> $LOG_FILE 2>&1
+    # Creating User Default Directories
+    mkdir $HOME/Apps $HOME/Downloads $HOME/Documents >> $LOG_FILE 2>&1
     # Installing Default Wallpaper
     cp settings/start/wallpaper.jpg $HOME/.config/nirit/ >> $LOG_FILE 2>&1
     # Installing Nirit Logo
     cp settings/start/logo.png $HOME/.config/nirit/ >> $LOG_FILE 2>&1
     # Changing the new files owner
+    chown -R $USER:$USER $HOME/Apps
+    chown -R $USER:$USER $HOME/Downloads
+    chown -R $USER:$USER $HOME/Documents
     chown -R $USER:$USER $HOME/.config >> $LOG_FILE 2>&1
     chown -R $USER:$USER /usr/share/icons >> $LOG_FILE 2>&1
     chown -R $USER:$USER /usr/share/rofi/themes >> $LOG_FILE 2>&1
