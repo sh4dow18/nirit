@@ -85,6 +85,8 @@ main() {
     RESET_COLOR=$(color "0")
     # Logs Variables
     LOG_FILE="nirit-installer.log"
+    # Nirit Version
+    NIRIT_VERSION="v2.1.0"
     # Hello Command
     echo "     __  _        _  _   " | tee $LOG_FILE
     echo "  /\ \ \(_) _ __ (_)| |_ " | tee -a $LOG_FILE
@@ -92,7 +94,7 @@ main() {
     echo "/ /\  / | || |   | || |_ " | tee -a $LOG_FILE
     echo "\_\ \/  |_||_|   |_| \__|" | tee -a $LOG_FILE
     echo "Welcome to the Nirit Installer!" | tee -a $LOG_FILE
-    echo "Version: 2.0.0" | tee -a $LOG_FILE
+    echo "Version: $NIRIT_VERSION" | tee -a $LOG_FILE
     # Main Verifications
     # Check if nirit is being run with an installation method already installed
     if [[ -e /etc/X11/nirit && $1 != "-u" ]]; then
@@ -215,13 +217,13 @@ main() {
         fi
         colorize $LIGHT_BLUE "Current Version Detected: $CURRENT_VERSION" | tee -a $LOG_FILE
         # Check if the current version is the latest
-        if [[ $CURRENT_VERSION == "v2.1.0" ]]; then
-            colorize $GREEN "\nNirit is updated to its latest version v2.1.0" | tee -a $LOG_FILE
+        if [[ $CURRENT_VERSION == $NIRIT_VERSION ]]; then
+            colorize $GREEN "\nNirit is updated to its latest version $NIRIT_VERSION" | tee -a $LOG_FILE
             exit 1
         fi
         # Check if the current version is newer than the installation version
-        UPDATED_VERSION=$(printf "%s\n%s\n" "$CURRENT_VERSION" "v2.1.0" | sort -V | tail -n 1)
-        if [[ $UPDATED_VERSION != "v2.1.0" ]]; then
+        UPDATED_VERSION=$(printf "%s\n%s\n" "$CURRENT_VERSION" $NIRIT_VERSION | sort -V | tail -n 1)
+        if [[ $UPDATED_VERSION != $NIRIT_VERSION ]]; then
             colorize $RED "\nThe version you are trying to install is an older version than the current one you have installed" | tee -a $LOG_FILE
             exit 1
         fi
