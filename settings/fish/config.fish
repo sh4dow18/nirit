@@ -428,11 +428,11 @@ end
 
 # Helps to show Nirit actual information
 function nirit-information
-	echo "Nirit Version: v2.0.0"
+	echo "Nirit Version: v2.1.0"
 	echo "Mode Installed: Normal"
 	echo "Repository URL: https://github.com/sh4dow18/nirit"
 	echo "Created By: Ramsés Solano (sh4dow18)"
-	echo "Last Update: 11/21/2024"
+	echo "Last Update: 2025-10-03"
 end
 
 # Helps to update Nirit Project faster and easily
