@@ -729,3 +729,31 @@ function nirit-package-manager
 		echo "Program not Found in Available Programs" | tee -a $NPG_LOGFILE
 	end
 end
+# Helps to easily add paths to path variable and fish config
+function nirit-update-path
+	# Set a log file that saves the time the function was executed, as well as the arguments sent
+	set LOGFILE ~/.config/nirit/logs/nirit-package-manager.log
+  echo Executed on: (date +"%Y-%m-%d %H:%M:%S %Z") >> $LOGFILE 2>&1
+	echo "Input: $argv" >> $LOGFILE
+	# If the user submitted less than 1 argument or submitted a "--help" argument, show help and exit
+	set HELP "Usage: nirit-update-path PATH_TO_ADD_IN_PATH_VARIABLE"
+	if test (count $argv) -lt 1
+    echo -e $HELP | tee -a $LOGFILE
+    return
+	end
+	if contains -- "--help" $argv
+		echo -e $HELP | tee -a $LOGFILE
+		return
+	end
+	# Set the first argument as the program
+	set NEW_PATH "$argv[1]"
+	# Set path in fish config
+	set -U fish_user_paths $NEW_PATH $fish_user_paths
+	# Check if the path was added
+	if test $status -eq 0
+		# Set new path
+		echo "Path added successfully" | tee -a $LOGFILE
+	else
+		echo "Path cannot be add it" | tee -a $LOGFILE
+	end
+end
