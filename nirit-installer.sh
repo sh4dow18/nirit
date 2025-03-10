@@ -381,7 +381,7 @@ main() {
         read ANSWER
         # If the user doesn't want to install new Nirit Settings, put the new version in fish config
         if [[ $ANSWER == [nN] ]]; then
-            sed -i "s/Nirit Version: $CURRENT_VERSION/Nirit Version: v2.0.0/g" cat /home/$(who | head -n 1 | cut -d " " -f 1)/.config/fish/config.fish 2>> $LOG_FILE
+            sed -i "s/Nirit Version: $CURRENT_VERSION/Nirit Version: $NIRIT_VERSION/g" cat /home/$(who | head -n 1 | cut -d " " -f 1)/.config/fish/config.fish 2>> $LOG_FILE
             echo "Nirit Updated without Settings" | tee -a $LOG_FILE
             exit 0
         fi
@@ -506,7 +506,7 @@ main() {
     mkdir /usr/share/icons/default/ >> $LOG_FILE 2>&1
     cp settings/gtk/cursor/index.theme /usr/share/icons/default/ >> $LOG_FILE 2>&1
     # Installing Adwaita-Dark
-    cp -r settings/gtk/install/* $HOME/.config/
+    cp -r settings/gtk/install/* $HOME/.config/ >> $LOG_FILE 2>&1
     # Installing Grub Theme
     progress_status $LIGHT_BLUE "Installing Grub Theme..." "81"
     unzip settings/grub/darkmatter.zip >> $LOG_FILE 2>&1
