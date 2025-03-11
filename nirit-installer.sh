@@ -303,6 +303,10 @@ main() {
     if [[ $BROWSER == "opera-stable" ]]; then
         no_questions "opera-stable opera-stable/add-deb-source boolean false"
     fi
+    # Check if Opera Browser is installed
+    if [[ $1 == "-u" ]] && is_installed "opera-stable"; then
+        BROWSER="opera-stable"
+    fi
     install_programs $HIGH_RED "Browser" "90" "$BROWSER" false
     progress_status $GREEN "Instalation Completed" "100"
     # If the installation method is "Normal Method" or it is an update with "Normal Method", do this
@@ -311,6 +315,10 @@ main() {
         colorize $HIGH_PURPLE "\nInstalling Nirit Recommended..." | tee -a $LOG_FILE
         install_programs $ORANGE "View Multimedia Files" "0" "$MULTIMEDIA" true
         install_programs $HIGH_BLUE "Change Themes" "33" "$THEMES" true
+        # Check if Onlyoffice is installed
+        if [[ $1 == "-u" ]] && is_installed "onlyoffice-desktopeditors"; then
+            LIBREOFFICE=""
+        fi
         install_programs $HIGH_RED "Office" "66" "$OFFICE $LIBREOFFICE" true
         # If the user has chosen Onlyoffice instead of Libreoffice in the normal method, install it
         # If Onlyoffice is already installed, update it
